@@ -86,7 +86,7 @@ self.addEventListener('fetch', event => {
         url.hostname.includes('identitytoolkit') ||
         url.hostname.includes('securetoken') ||
         url.hostname.includes('formsubmit.co') ||
-        url.hostname.includes('weather-topaz-eta-99.vercel.app')) {
+        url.hostname.includes('https://24-7-live-weather.vercel.app/')) {
         return;
     }
 

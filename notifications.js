@@ -1,11 +1,13 @@
 /* 🔔 SMART NOTIFICATION SYSTEM
    ১. দিনের সময় অনুযায়ী পরামর্শ দেখাবে।
-   ২. স্টক কমে গেলে (২ বা তার কম) অটোমেটিক অ্যালার্ট দিবে।
+   ২. স্টক কমে গেলে (২ বা তার কম) অ্যালার্ট দিবে।
+   ৩. PK Chat Bot থেকে দৈনিক ঔষধ বাকি বা রিমাইন্ডার মেসেজ যুক্ত করবে।
 */
 
 // গ্লোবাল ভেরিয়েবল
 let timeNotifications = [];
 let stockNotifications = [];
+let botNotifications = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     generateTimeBasedNotifications();
@@ -19,6 +21,7 @@ if (typeof auth !== 'undefined') {
             startStockListener(user.uid);
         } else {
             stockNotifications = []; // লগআউট হলে স্টক অ্যালার্ট ক্লিয়ার
+            botNotifications = [];
             renderAllNotifications();
         }
     });
@@ -83,7 +86,31 @@ function startStockListener(uid) {
     });
 }
 
-// ৩. সব নোটিফিকেশন একসাথে দেখানো (Stock + Time)
+// ২.৫ PK Chat Bot থেকে সরাসরি নোটিফিকেশন যুক্ত করার মেথড
+window.setPkBotNotifications = function(items) {
+    botNotifications = Array.isArray(items)
+        ? items.filter(it => it && (it.title || it.desc)).map(it => ({
+            icon: it.icon || '🤖',
+            color: it.color || 'bg-teal-100 text-teal-700',
+            title: String(it.title || 'PK Chat Bot'),
+            desc: String(it.desc || ''),
+            tag: it.tag || 'PK Chat Bot',
+            action: it.action || 'open_pk_chatbot'
+        }))
+        : [];
+    renderAllNotifications();
+};
+
+function escapeNotifHtml(str) {
+    return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// ৩. সব নোটিফিকেশন একসাথে দেখানো (PK Chat Bot + Stock + Time)
 function renderAllNotifications() {
     const listContainer = document.getElementById('notif-list');
     const badge = document.getElementById('notif-badge');
@@ -91,9 +118,9 @@ function renderAllNotifications() {
     if (!listContainer) return;
 
     listContainer.innerHTML = '';
-    
-    // প্রথমে স্টক অ্যালার্ট (সবচেয়ে জরুরি), তারপর সময়ের মেসেজ
-    const allData = [...stockNotifications, ...timeNotifications];
+
+    // স্টক ও বটের জরুরি অ্যালার্ট + পূর্বের নিয়মিত সময়ের সব নোটিফিকেশন একসাথে থাকবে
+    const allData = [...botNotifications, ...stockNotifications, ...timeNotifications];
 
     if (allData.length === 0) {
         listContainer.innerHTML = `<div class="p-8 text-center opacity-50"><p class="text-xs">কোনো নোটিফিকেশন নেই</p></div>`;
@@ -104,17 +131,29 @@ function renderAllNotifications() {
     allData.forEach(item => {
         const div = document.createElement('div');
         div.className = "p-4 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition cursor-pointer";
+        const tagBadge = item.tag
+            ? `<span class="ml-1.5 inline-block text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-700">${escapeNotifHtml(item.tag)}</span>`
+            : '';
         div.innerHTML = `
             <div class="flex items-start gap-3">
                 <div class="w-8 h-8 rounded-full ${item.color} flex items-center justify-center flex-shrink-0">
                     ${item.icon}
                 </div>
-                <div>
-                    <p class="text-sm font-bold text-gray-800 dark:text-gray-200">${item.title}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${item.desc}</p>
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center flex-wrap gap-y-0.5">${escapeNotifHtml(item.title)}${tagBadge}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">${escapeNotifHtml(item.desc)}</p>
                 </div>
             </div>
         `;
+        if (item.action === 'open_pk_chatbot') {
+            div.addEventListener('click', () => {
+                const dropdown = document.getElementById('notif-dropdown');
+                if (dropdown) dropdown.classList.add('hidden');
+                if (typeof openPkChatBot === 'function') {
+                    openPkChatBot();
+                }
+            });
+        }
         listContainer.appendChild(div);
     });
 
@@ -129,16 +168,14 @@ function renderAllNotifications() {
 // টগল ফাংশন
 function toggleNotifications() {
     const dropdown = document.getElementById('notif-dropdown');
-    dropdown.classList.toggle('hidden');
+    if (dropdown) dropdown.classList.toggle('hidden');
 }
 
 // ক্লিয়ার ফাংশন
 function clearNotifications() {
-    // শুধু টাইমার মেসেজগুলো মুছবে, কিন্তু স্টক অ্যালার্ট থেকে যাবে (কারণ ওটা জরুরি)
-    // তবে ইউজার চাইলে সব মুছে দিতে পারে
     const list = document.getElementById('notif-list');
     const badge = document.getElementById('notif-badge');
-    list.innerHTML = `<div class="p-8 text-center opacity-50"><span class="material-symbols-outlined text-4xl mb-2">notifications_off</span><p class="text-xs">সব ক্লিয়ার!</p></div>`;
+    if (list) list.innerHTML = `<div class="p-8 text-center opacity-50"><span class="material-symbols-outlined text-4xl mb-2">notifications_off</span><p class="text-xs">সব ক্লিয়ার!</p></div>`;
     if (badge) badge.classList.add('hidden');
 }
 

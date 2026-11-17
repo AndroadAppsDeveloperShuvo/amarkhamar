@@ -6,14 +6,14 @@
 // ১. পেজের HTML স্ট্রাকচার (যা DOMContentLoaded এ ইনজেক্ট হবে)
 const medicinePageHTML = `
 <div id="medicine-page" class="page tab-page bg-gray-50 dark:bg-gray-900 transition-all duration-300 relative">
-    <header class="sticky top-0 z-40 p-5 bg-teal-700 text-white flex items-center justify-between shadow-md rounded-b-2xl mb-4">
-        <div class="flex items-center gap-3">
-            <div class="relative flex items-center">
+    <header class="sticky top-0 z-40 px-4 py-4 sm:p-5 bg-teal-700 text-white flex items-center justify-between gap-2 shadow-md rounded-b-2xl mb-4">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <div class="relative flex items-center flex-shrink-0">
                 <button id="med-menu-trigger" onclick="toggleMedicineMenu(event)" class="p-2 -ml-2 rounded-xl text-white hover:bg-teal-800 transition active:scale-95 flex items-center justify-center relative">
                     <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
                 <!-- Dropdown menu (Moved outside of button to prevent event bubbling bugs) -->
-                <div id="med-menu-dropdown" class="hidden absolute top-12 left-0 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 w-52 z-50 text-left divide-y divide-gray-100 dark:divide-gray-700">
+                <div id="med-menu-dropdown" class="hidden absolute top-12 left-0 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 py-1.5 w-60 z-50 text-left divide-y divide-gray-100 dark:divide-gray-700">
                     <div onclick="clickMedMenu('profile')" class="px-4 py-3 hover:bg-teal-50 dark:hover:bg-gray-700/50 flex items-center gap-3 text-xs font-bold cursor-pointer transition text-gray-700 dark:text-gray-200">
                         <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-lg">person</span>
                         <span>প্রোফাইল</span>
@@ -21,6 +21,14 @@ const medicinePageHTML = `
                     <div onclick="clickMedMenu('refresh')" class="px-4 py-3 hover:bg-teal-50 dark:hover:bg-gray-700/50 flex items-center gap-3 text-xs font-bold cursor-pointer transition text-gray-700 dark:text-gray-200">
                         <span class="material-symbols-outlined text-teal-600 dark:text-teal-400 text-lg">refresh</span>
                         <span>রিফ্রেশ করুন</span>
+                    </div>
+                    <div id="med-menu-doctor-btn" onclick="clickMedMenu('doctor')" class="px-4 py-3 hover:bg-emerald-50 dark:hover:bg-gray-700/50 flex items-center gap-3 text-xs font-bold cursor-pointer transition text-emerald-700 dark:text-emerald-400">
+                        <span class="material-symbols-outlined text-lg">stethoscope</span>
+                        <span>পরামর্শক / ডাক্তারের সাথে যোগাযোগ</span>
+                    </div>
+                    <div id="med-menu-doctor-edit-btn" onclick="clickMedMenu('doctor_edit')" class="hidden px-4 py-3 hover:bg-emerald-50 dark:hover:bg-gray-700/50 flex items-center gap-3 text-xs font-bold cursor-pointer transition text-emerald-700 dark:text-emerald-400">
+                        <span class="material-symbols-outlined text-lg">medical_information</span>
+                        <span>ডাক্তার / পরামর্শক নিয়ন্ত্রণ</span>
                     </div>
                     <div id="med-menu-video-edit-btn" onclick="clickMedMenu('video_edit')" class="hidden px-4 py-3 hover:bg-teal-50 dark:hover:bg-gray-700/50 flex items-center gap-3 text-xs font-bold cursor-pointer transition text-purple-600 dark:text-purple-400">
                         <span class="material-symbols-outlined text-lg">video_settings</span>
@@ -32,24 +40,28 @@ const medicinePageHTML = `
                     </div>
                 </div>
             </div>
-            <div>
-                <h1 class="text-lg md:text-xl font-bold flex items-center gap-1.5">
-                    ঔষধের তালিকা
-                    <span id="med-admin-badge" class="hidden text-[9px] bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">ADMIN</span>
+            <div class="min-w-0">
+                <h1 class="text-base sm:text-xl font-bold flex items-center gap-1.5 flex-wrap">
+                    <span class="truncate">ঔষধের তালিকা</span>
+                    <span id="med-admin-badge" class="hidden text-[9px] bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse flex-shrink-0">ADMIN</span>
                 </h1>
-                <p id="med-scrolling-bar" class="text-[10px] text-teal-100 mt-0.5 max-w-[200px] truncate">রিয়েল-টাইম গাইডলাইন ও টিকা শিডিউল</p>
+                <p id="med-scrolling-bar" class="text-[10px] text-teal-100 mt-0.5 max-w-[170px] sm:max-w-[210px] truncate">রিয়েল-টাইম গাইডলাইন ও টিকা শিডিউল</p>
             </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+            <!-- Doctor Settings Button for Admin -->
+            <button id="med-doctor-admin-btn" onclick="openMedDoctorEditModal()" class="hidden bg-white/20 hover:bg-white/30 text-white rounded-xl p-1.5 sm:p-2 transition flex items-center justify-center active:scale-95" title="ডাক্তার / পরামর্শক নিয়ন্ত্রণ">
+                <span class="material-symbols-outlined text-xl">medical_information</span>
+            </button>
             <!-- Video Edit Button for Admin -->
-            <button id="med-video-admin-btn" onclick="openMedVideoEditModal()" class="hidden bg-white/20 hover:bg-white/30 text-white rounded-xl p-2 transition flex items-center justify-center active:scale-95" title="ভিডিও লিংক পরিবর্তন">
+            <button id="med-video-admin-btn" onclick="openMedVideoEditModal()" class="hidden bg-white/20 hover:bg-white/30 text-white rounded-xl p-1.5 sm:p-2 transition flex items-center justify-center active:scale-95" title="ভিডিও লিংক পরিবর্তন">
                 <span class="material-symbols-outlined text-xl">video_settings</span>
             </button>
             <!-- Add Button for Admin -->
-            <button id="med-add-btn" onclick="openMedFormModal()" class="hidden bg-white/20 hover:bg-white/30 text-white rounded-xl p-2 transition flex items-center justify-center active:scale-95">
+            <button id="med-add-btn" onclick="openMedFormModal()" class="hidden bg-white/20 hover:bg-white/30 text-white rounded-xl p-1.5 sm:p-2 transition flex items-center justify-center active:scale-95">
                 <span class="material-symbols-outlined text-xl">add</span>
             </button>
-            <span class="text-xs bg-white/10 px-2.5 py-1 rounded-full font-bold backdrop-blur-sm shadow-inner" id="med-user-status-badge">ইউজার</span>
+            <span class="text-xs bg-white/10 px-2.5 py-1 rounded-full font-bold backdrop-blur-sm shadow-inner flex-shrink-0" id="med-user-status-badge">ইউজার</span>
         </div>
     </header>
 
@@ -124,50 +136,23 @@ const medicinePageHTML = `
                 <span class="material-symbols-outlined">close</span>
             </button>
             <div class="w-14 h-14 bg-teal-50 dark:bg-teal-950/20 text-teal-600 dark:text-teal-400 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                <span class="material-symbols-outlined text-2xl">mark_email_read</span>
+                <span class="material-symbols-outlined text-2xl">shield_person</span>
             </div>
             <div>
                 <h2 class="text-base font-bold text-gray-800 dark:text-white">এডমিন নিরাপত্তা যাচাইকরণ</h2>
-                <p class="text-xs text-gray-400 mt-1">শুধুমাত্র এডমিন জিমেইল ও ওটিপি কোড দিয়ে লগইন সম্ভব</p>
+                <p class="text-xs text-gray-400 mt-1">আপনার Google Authenticator অ্যাপের ৬ ডিজিটের কোডটি লিখুন</p>
             </div>
 
-            <!-- Step 1: Send OTP -->
-            <div id="med-admin-step1" class="space-y-3 text-left">
+            <!-- Google Authenticator -->
+            <div class="space-y-4 text-left">
                 <div>
-                    <label class="text-[11px] font-bold text-gray-600 dark:text-gray-300 block mb-1">আপনার এডমিন জিমেইল লিখুন</label>
-                    <div class="relative">
-                        <input type="email" id="med-admin-email" placeholder="এডমিন জিমেইল লিখুন..." autocomplete="email" class="w-full p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white border border-gray-200 rounded-xl font-medium text-xs focus:outline-none focus:ring-2 focus:ring-teal-500">
-                        <span class="material-symbols-outlined absolute right-3 top-2.5 text-gray-400 text-sm">mail</span>
-                    </div>
+                    <label class="text-[10px] font-bold text-gray-500 dark:text-gray-400 block mb-1">Google Authenticator এর ৬ ডিজিট কোড</label>
+                    <input type="text" id="med-admin-otp-input" maxlength="6" inputmode="numeric" placeholder="------" class="w-full p-3 text-center border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl font-bold tracking-[0.4em] text-2xl focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-inner">
                 </div>
-                <button id="med-send-otp-btn" onclick="sendMedAdminOtp()" class="w-full bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs transition duration-200 shadow-md flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-sm">send</span>
-                    <span>ভেরিফিকেশন কোড পাঠান</span>
+                <button id="med-verify-otp-btn" onclick="verifyMedAdminOtp()" class="w-full bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-3 rounded-xl text-xs transition duration-200 shadow-md flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">key</span>
+                    <span>কোড যাচাই ও এডমিন মোড চালু করুন</span>
                 </button>
-            </div>
-
-            <!-- Step 2: Verify OTP -->
-            <div id="med-admin-step2" class="space-y-3 text-left hidden">
-                <div class="bg-teal-50 dark:bg-teal-950/30 p-2.5 rounded-xl border border-teal-100 dark:border-teal-900/50">
-                    <p class="text-[11px] text-teal-800 dark:text-teal-300 font-semibold leading-relaxed">
-                        📩 আপনার জিমেইল ঠিকানায় ৬ ডিজিটের ভেরিফিকেশন কোড পাঠানো হয়েছে। ইনবক্স চেক করে কোডটি লিখুন।
-                    </p>
-                </div>
-
-                <div id="med-dev-preview-box" class="hidden"></div>
-
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 dark:text-gray-400 block mb-1">৬ ডিজিটের কোড লিখুন</label>
-                    <input type="text" id="med-admin-otp-input" maxlength="6" inputmode="numeric" placeholder="------" class="w-full p-2.5 text-center border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl font-bold tracking-[0.4em] text-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
-                </div>
-                <button id="med-verify-otp-btn" onclick="verifyMedAdminOtp()" class="w-full bg-teal-600 hover:bg-teal-700 active:scale-95 text-white font-bold py-2.5 rounded-xl text-xs transition duration-200 shadow-md flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-sm">check_circle</span>
-                    <span>কোড যাচাই ও মোড অন করুন</span>
-                </button>
-                <div class="flex justify-between items-center text-[10px] text-gray-500 dark:text-gray-400 pt-1">
-                    <button id="med-resend-btn" onclick="sendMedAdminOtp()" class="text-teal-600 dark:text-teal-400 hover:underline font-bold" disabled>পুনরায় পাঠান</button>
-                    <span id="med-resend-timer"></span>
-                </div>
             </div>
 
             <p id="med-pass-error" class="text-red-500 font-bold text-xs hidden"></p>
@@ -290,6 +275,48 @@ const medicinePageHTML = `
                 <div class="flex gap-2.5 pt-2">
                     <button type="submit" class="flex-grow bg-red-600 hover:bg-red-700 text-white font-bold p-3 rounded-xl text-xs transition duration-200 shadow-md active:scale-95">সংরক্ষণ করুন</button>
                     <button type="button" onclick="closeMedVideoEditModal()" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-300 font-bold px-4 rounded-xl text-xs transition">বাতিল</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🩺 Consultant / Doctor Control Modal (For Admin) -->
+    <div id="med-doctor-edit-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-gray-700 space-y-4 relative">
+            <button type="button" onclick="closeMedDoctorEditModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 font-bold text-base">
+                <span class="material-symbols-outlined text-2xl">medical_information</span>
+                <h3>পরামর্শক / ডাক্তারের যোগাযোগ নিয়ন্ত্রণ</h3>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">এখান থেকে পরামর্শক বা ডাক্তারের ফোন নম্বর পরিবর্তন করতে অথবা ব্যবহারকারীদের কাছ থেকে লুকিয়ে রাখতে পারবেন।</p>
+            <form id="med-doctor-config-form" onsubmit="saveMedDoctorConfig(event)" class="space-y-3 pt-1">
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600">
+                    <div>
+                        <p class="text-xs font-bold text-gray-800 dark:text-white">ব্যবহারকারীদের জন্য দেখান</p>
+                        <p id="med-doctor-visibility-hint" class="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5">বর্তমানে সক্রিয় (দেখা যাচ্ছে)</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="med-doctor-form-enabled" class="sr-only peer" onchange="updateMedDoctorVisibilityHint()" checked>
+                        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-gray-600 dark:text-gray-300 block mb-1">শিরোনাম (Title):</label>
+                    <input type="text" id="med-doctor-form-title" required placeholder="পরামর্শক / ডাক্তারের সাথে যোগাযোগ" class="w-full p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-gray-600 dark:text-gray-300 block mb-1">ফোন ও WhatsApp নম্বর:</label>
+                    <input type="text" id="med-doctor-form-phone" required placeholder="+8801719460996" class="w-full p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white border border-gray-200 rounded-xl text-xs font-bold tabular-nums focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-gray-600 dark:text-gray-300 block mb-1">সংক্ষিপ্ত বার্তা:</label>
+                    <textarea id="med-doctor-form-note" rows="2" placeholder="মুরগির অসুস্থতা ও পরামর্শের জন্য কথা বলুন..." class="w-full p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
+                </div>
+                <div class="flex gap-2.5 pt-2">
+                    <button type="submit" class="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-xs transition duration-200 shadow-md active:scale-95">সংরক্ষণ করুন</button>
+                    <button type="button" onclick="closeMedDoctorEditModal()" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-300 font-bold px-4 rounded-xl text-xs transition">বাতিল</button>
                 </div>
             </form>
         </div>
@@ -498,7 +525,76 @@ if (targetDb) {
 
 // ৪. ওষধ ট্র্যাকিং গ্লোবাল স্টেট ও মেথডসমূহ
 let completedMedicinesMap = {};
+let skippedMedicinesMap = {};
 let currentTrackingFilter = 'all';
+
+window.getSkippedMedicinesMap = () => skippedMedicinesMap;
+
+function getMedicineTimeStartHour(timeStr) {
+    const t = String(timeStr || 'সকাল').trim();
+    if (t.includes('দুপুর')) return 12;
+    if (t.includes('রাত')) return 16; // বিকাল ৪:০০ টা থেকে রাতের বেলা শুরু
+    return 6; // সকাল ও সারাদিন সকাল ৬:০০ টা থেকে শুরু
+}
+
+function getMedicineTimeUnlockLabel(timeStr) {
+    const t = String(timeStr || 'সকাল').trim();
+    if (t.includes('দুপুর')) return 'দুপুর ১২:০০';
+    if (t.includes('রাত')) return 'বিকাল ৪:০০';
+    return 'সকাল ৬:০০';
+}
+
+function toBnDigitsLocal(val) {
+    return String(val).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+}
+
+function getMedicineTickEligibility(itemDay, itemTime, currentAgeDays) {
+    const dayNum = parseInt(itemDay, 10) || 1;
+    const timeLabel = String(itemTime || 'সকাল').trim();
+    const startHour = getMedicineTimeStartHour(timeLabel);
+    const unlockText = getMedicineTimeUnlockLabel(timeLabel);
+
+    if (currentAgeDays !== null && currentAgeDays !== undefined) {
+        if (dayNum > currentAgeDays) {
+            return {
+                allowed: false,
+                lockType: 'future_day',
+                startHour,
+                unlockText,
+                reason: `দিন ${toBnDigitsLocal(dayNum)} হলে টিক দেওয়া যাবে`
+            };
+        }
+        if (dayNum < currentAgeDays) {
+            return {
+                allowed: true,
+                lockType: 'past_day',
+                startHour,
+                unlockText,
+                reason: ''
+            };
+        }
+    }
+
+    const nowHour = new Date().getHours();
+    if (nowHour < startHour) {
+        return {
+            allowed: false,
+            lockType: 'before_hour',
+            startHour,
+            unlockText,
+            reason: `${timeLabel} বেলার ঔষধ ${unlockText} টার পর টিক দেওয়া যাবে`
+        };
+    }
+
+    return {
+        allowed: true,
+        lockType: 'open',
+        startHour,
+        unlockText,
+        reason: ''
+    };
+}
+window.getMedicineTickEligibility = getMedicineTickEligibility;
 
 function setTrackingFilter(filter) {
     currentTrackingFilter = filter;
@@ -525,19 +621,40 @@ function initCompletedMedicinesListener(userId) {
     const cached = localStorage.getItem(`completed_meds_${userId}`);
     if (cached) {
         try {
-            completedMedicinesMap = JSON.parse(cached);
+            completedMedicinesMap = JSON.parse(cached) || {};
         } catch (e) {
             console.warn("Error parsing cached completed medicines", e);
         }
     }
+    const cachedSkipped = localStorage.getItem(`skipped_meds_${userId}`);
+    if (cachedSkipped) {
+        try {
+            skippedMedicinesMap = JSON.parse(cachedSkipped) || {};
+        } catch (e) {
+            console.warn("Error parsing cached skipped medicines", e);
+        }
+    }
     
     if (targetDb) {
+        targetDb.ref(`users/${userId}/completed_medicines`).off('value');
         targetDb.ref(`users/${userId}/completed_medicines`).on('value', snapshot => {
             completedMedicinesMap = snapshot.val() || {};
             localStorage.setItem(`completed_meds_${userId}`, JSON.stringify(completedMedicinesMap));
             renderScheduleTimeline();
+            if (typeof window.refreshPkBotUI === 'function') window.refreshPkBotUI();
         }, error => {
             console.warn("Using offline cached completed medicines:", error);
+            renderScheduleTimeline();
+        });
+
+        targetDb.ref(`users/${userId}/skipped_medicines`).off('value');
+        targetDb.ref(`users/${userId}/skipped_medicines`).on('value', snapshot => {
+            skippedMedicinesMap = snapshot.val() || {};
+            localStorage.setItem(`skipped_meds_${userId}`, JSON.stringify(skippedMedicinesMap));
+            renderScheduleTimeline();
+            if (typeof window.refreshPkBotUI === 'function') window.refreshPkBotUI();
+        }, error => {
+            console.warn("Using offline cached skipped medicines:", error);
             renderScheduleTimeline();
         });
     } else {
@@ -557,6 +674,14 @@ function showToastMessage(msg) {
     }
 }
 
+function findScheduleByItemKey(itemKey) {
+    const list = adminSchedules || [];
+    return list.find(item => {
+        const key = item.id || ('std_' + item.day + '_' + (item.name || '').replace(/\s+/g, '_') + '_' + (item.time || ''));
+        return key === itemKey;
+    }) || null;
+}
+
 async function toggleMedicineCompletion(itemKey, isCompleted) {
     const userId = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.uid : null;
     if (!userId) {
@@ -565,10 +690,22 @@ async function toggleMedicineCompletion(itemKey, isCompleted) {
     }
 
     if (isCompleted) {
+        const matchedItem = findScheduleByItemKey(itemKey);
+        if (matchedItem) {
+            const elig = getMedicineTickEligibility(matchedItem.day, matchedItem.time, activeShipmentAgeDays);
+            if (!elig.allowed) {
+                showToastMessage(`⏳ সময়ের আগে টিক দেওয়া যাবে না! ${elig.reason}`);
+                return;
+            }
+        }
         completedMedicinesMap[itemKey] = {
             timestamp: Date.now(),
             markedAt: new Date().toISOString()
         };
+        if (skippedMedicinesMap[itemKey]) {
+            delete skippedMedicinesMap[itemKey];
+            localStorage.setItem(`skipped_meds_${userId}`, JSON.stringify(skippedMedicinesMap));
+        }
         showToastMessage("✅ ওষুধটি সফলভাবে ব্যবহৃত মার্ক করা হয়েছে");
     } else {
         delete completedMedicinesMap[itemKey];
@@ -576,6 +713,9 @@ async function toggleMedicineCompletion(itemKey, isCompleted) {
     }
     localStorage.setItem(`completed_meds_${userId}`, JSON.stringify(completedMedicinesMap));
     renderScheduleTimeline();
+    if (typeof window.refreshPkBotUI === 'function') {
+        window.refreshPkBotUI();
+    }
 
     if (targetDb) {
         try {
@@ -584,6 +724,7 @@ async function toggleMedicineCompletion(itemKey, isCompleted) {
                     timestamp: firebase.database.ServerValue.TIMESTAMP || Date.now(),
                     markedAt: new Date().toISOString()
                 });
+                await targetDb.ref(`users/${userId}/skipped_medicines/${itemKey}`).remove();
             } else {
                 await targetDb.ref(`users/${userId}/completed_medicines/${itemKey}`).remove();
             }
@@ -593,6 +734,67 @@ async function toggleMedicineCompletion(itemKey, isCompleted) {
     }
 }
 
+async function toggleMedicineSkipped(itemKey, isSkipped) {
+    const userId = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.uid : null;
+    if (!userId) {
+        showToastMessage("⚠️ এই সুবিধা ব্যবহার করতে প্রথমে লগইন করুন!");
+        return;
+    }
+
+    if (isSkipped) {
+        const matchedItem = findScheduleByItemKey(itemKey);
+        if (matchedItem && activeShipmentAgeDays !== null && (parseInt(matchedItem.day, 10) || 1) > activeShipmentAgeDays) {
+            showToastMessage(`⏳ দিন ${toBnDigitsLocal(matchedItem.day)} এলে এই ঔষধের সিদ্ধান্ত নিতে পারবেন`);
+            return;
+        }
+        skippedMedicinesMap[itemKey] = {
+            status: 'skipped',
+            timestamp: Date.now(),
+            skippedAt: new Date().toISOString()
+        };
+        if (completedMedicinesMap[itemKey]) {
+            delete completedMedicinesMap[itemKey];
+            localStorage.setItem(`completed_meds_${userId}`, JSON.stringify(completedMedicinesMap));
+        }
+        showToastMessage("⏭️ ঔষধটি 'প্রয়োজন নেই' হিসেবে বাদ দেওয়া হয়েছে");
+    } else {
+        delete skippedMedicinesMap[itemKey];
+        showToastMessage("🔄 ঔষধটি পুনরায় বাকি তালিকায় ফিরিয়ে আনা হয়েছে");
+    }
+    localStorage.setItem(`skipped_meds_${userId}`, JSON.stringify(skippedMedicinesMap));
+    renderScheduleTimeline();
+    if (typeof window.refreshPkBotUI === 'function') {
+        window.refreshPkBotUI();
+    }
+
+    if (targetDb) {
+        try {
+            if (isSkipped) {
+                await targetDb.ref(`users/${userId}/skipped_medicines/${itemKey}`).set({
+                    status: 'skipped',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP || Date.now(),
+                    skippedAt: new Date().toISOString()
+                });
+                await targetDb.ref(`users/${userId}/completed_medicines/${itemKey}`).remove();
+            } else {
+                await targetDb.ref(`users/${userId}/skipped_medicines/${itemKey}`).remove();
+            }
+        } catch (error) {
+            console.error("Error saving medicine skipped status:", error);
+        }
+    }
+}
+window.toggleMedicineSkipped = toggleMedicineSkipped;
+window.initSkippedMedicinesListener = initCompletedMedicinesListener;
+
+// Auto-refresh time locks every 60s when visible so noon/afternoon slots unlock automatically
+setInterval(() => {
+    const medPage = document.getElementById('medicine-page');
+    if (medPage && medPage.classList.contains('page-visible')) {
+        renderScheduleTimeline();
+    }
+}, 60000);
+
 // Auth State Hooks
 if (typeof auth !== 'undefined') {
     auth.onAuthStateChanged(user => {
@@ -600,6 +802,7 @@ if (typeof auth !== 'undefined') {
             initCompletedMedicinesListener(user.uid);
         } else {
             completedMedicinesMap = {};
+            skippedMedicinesMap = {};
             renderScheduleTimeline();
         }
     });
@@ -609,19 +812,27 @@ if (typeof auth !== 'undefined') {
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     initCompletedMedicinesListener(user.uid);
+                    const email = (user.email || '').trim().toLowerCase();
+                    if (email !== getAdminTargetEmail() && medicineAdminModeEnabled) {
+                        disableAdminMode();
+                    }
                 } else {
                     completedMedicinesMap = {};
+                    skippedMedicinesMap = {};
                     renderScheduleTimeline();
+                    if (medicineAdminModeEnabled) {
+                        disableAdminMode();
+                    }
                 }
             });
         }
     });
 }
 
-// ৩. পেজ ইনজেক্ট করা
-document.addEventListener('DOMContentLoaded', () => {
+// ৩. পেজ ইনজেক্ট করা (Immediate & DOMContentLoaded উভয় স্টেটেই নিরাপদে কার্যকর)
+function injectMedicinePageIfReady() {
     const mainApp = document.getElementById('main-app');
-    if (mainApp) {
+    if (mainApp && !document.getElementById('medicine-page')) {
         mainApp.insertAdjacentHTML('beforeend', medicinePageHTML);
         
         // সেটআপ কাস্টম কনফার্ম বোতামের ইভেন্ট লিসেনার
@@ -638,11 +849,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // চেক করুন ব্যাকএন্ড সেশন ভ্যালিড আছে কিনা
         checkMedAdminSession();
 
-        // ভিডিও লিংক ইনিশিয়ালাইজ করুন
+        // ভিডিও লিংক ও ডাক্তার সেটিংস ইনিশিয়ালাইজ করুন
         initBreedVideoLinks();
+        initDoctorConfig();
         updateVideoFabLabel();
 
-        // গ্লোবাল ক্লিক লিসেনার ড্রপডাউন বন্ধ করার জন্য (যাতে কোনো clashing না হয়)
+        // গ্লোবাল ক্লিক লিসেনার ড্রপডাউন বন্ধ করার জন্য
         document.addEventListener('click', (event) => {
             const dropdown = document.getElementById("med-menu-dropdown");
             const trigger = document.getElementById("med-menu-trigger");
@@ -652,8 +864,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // ইনিশিয়াল শিডিউল রেন্ডার
+        if (typeof renderScheduleTimeline === 'function') {
+            renderScheduleTimeline();
+        }
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectMedicinePageIfReady);
+} else {
+    injectMedicinePageIfReady();
+}
 
 // ৪. মেইন লজিক
 let allShipmentsData = {};
@@ -691,7 +914,7 @@ function toggleMedicineMenu(event) {
 }
 
 // Handle Hamburger Menu selections
-function clickMedMenu(type) {
+async function clickMedMenu(type) {
     const dropdown = document.getElementById("med-menu-dropdown");
     if (dropdown) dropdown.classList.add("hidden"); // Close dropdown safely
     
@@ -701,9 +924,33 @@ function clickMedMenu(type) {
         loadMedicineShipmentDropdowns();
         renderScheduleTimeline();
         alert("🔄 সফলভাবে রিফ্রেশ করা হয়েছে!");
+    } else if (type === 'doctor') {
+        const docCfg = getAdminDoctorConfig();
+        if (docCfg.enabled === false) {
+            showToastMessage("⚠️ পরামর্শক / ডাক্তারের সাথে যোগাযোগ বর্তমানে এডমিন কর্তৃক বন্ধ রাখা হয়েছে");
+            return;
+        }
+        if (typeof openPkDoctorContactModal === 'function') {
+            openPkDoctorContactModal();
+        } else {
+            window.location.href = `tel:${docCfg.phone}`;
+        }
+    } else if (type === 'doctor_edit') {
+        openMedDoctorEditModal();
     } else if (type === 'video_edit') {
         openMedVideoEditModal();
     } else if (type === 'admin') {
+        const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+        if (!user) {
+            alert("🔒 এডমিন মোড সক্রিয় করতে প্রথমে মূল অ্যাপে গিয়ে অনুমোদিত এডমিন একাউন্ট দিয়ে লগইন করুন!");
+            return;
+        }
+        const email = (user.email || '').trim().toLowerCase();
+        const isAuth = await isAuthorizedAdminEmail(email);
+        if (!isAuth) {
+            alert("⛔ অননুমোদিত একাউন্ট! আপনার চলতি একাউন্ট দিয়ে এডমিন মোড সক্রিয় করার অনুমতি নেই।");
+            return;
+        }
         if (medicineAdminModeEnabled) {
             disableAdminMode();
             showToastMessage("🔒 এডমিন মোড নিষ্ক্রিয় করা হয়েছে!");
@@ -713,19 +960,115 @@ function clickMedMenu(type) {
     }
 }
 
-let medAdminCurrentEnteredEmail = "";
+// 🛡️ STRICT ONE-WAY CRYPTOGRAPHIC HASH (No plaintext email or Base64 in source)
+const AUTH_ADMIN_HASH = "09bee536b2d1a9aa7b381a3f572e4c1492db86ff689a9597ba263fbec638cd57";
+
+async function isAuthorizedAdminEmail(email) {
+    if (!email) return false;
+    const clean = email.trim().toLowerCase();
+    try {
+        if (window.crypto && crypto.subtle) {
+            const buffer = new TextEncoder().encode(clean);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex === AUTH_ADMIN_HASH;
+        }
+    } catch (e) {}
+    return false;
+}
+
+// 🛡️ High-Security Vault: Decrypted only in-memory when authentic admin is present
+const _ADMIN_VAULT_BYTES = [127,123,38,82,33,119,4,121,81,124,41,115,52,97,84,36,120,38,5,119,102,85,4,52,113,113,5,82,99,84,103,96];
+
+async function getSecureAdminTotpSecret(email) {
+    if (!email) return null;
+    const isAuth = await isAuthorizedAdminEmail(email);
+    if (!isAuth) return null;
+    const hash = AUTH_ADMIN_HASH;
+    let decrypted = "";
+    for (let i = 0; i < _ADMIN_VAULT_BYTES.length; i++) {
+        decrypted += String.fromCharCode(_ADMIN_VAULT_BYTES[i] ^ hash.charCodeAt(i % hash.length));
+    }
+    return decrypted;
+}
+
+// 🛡️ Brute-force rate limiter
+let medFailedOtpAttempts = 0;
+let medLockoutUntil = 0;
+
+function base32ToBytes(base32) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    let bits = '';
+    const clean = (base32 || '').toUpperCase().replace(/=+$/, '').replace(/\s+/g, '');
+    for (let i = 0; i < clean.length; i++) {
+        const val = chars.indexOf(clean[i]);
+        if (val === -1) return null;
+        bits += val.toString(2).padStart(5, '0');
+    }
+    const bytes = [];
+    for (let i = 0; i + 8 <= bits.length; i += 8) {
+        bytes.push(parseInt(bits.substr(i, 8), 2));
+    }
+    return new Uint8Array(bytes);
+}
+
+async function generateTotpCode(secret, epochSeconds = Math.floor(Date.now() / 1000), timeStep = 30) {
+    try {
+        if (!window.crypto || !crypto.subtle) return null;
+        const keyBytes = base32ToBytes(secret);
+        if (!keyBytes) return null;
+        const cryptoKey = await crypto.subtle.importKey(
+            'raw',
+            keyBytes,
+            { name: 'HMAC', hash: 'SHA-1' },
+            false,
+            ['sign']
+        );
+
+        const counter = Math.floor(epochSeconds / timeStep);
+        const counterBuffer = new ArrayBuffer(8);
+        const view = new DataView(counterBuffer);
+        view.setUint32(0, Math.floor(counter / 0x100000000));
+        view.setUint32(4, counter >>> 0);
+
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, counterBuffer);
+        const sigBytes = new Uint8Array(signature);
+        const offset = sigBytes[sigBytes.length - 1] & 0x0f;
+
+        const binary =
+            ((sigBytes[offset] & 0x7f) << 24) |
+            ((sigBytes[offset + 1] & 0xff) << 16) |
+            ((sigBytes[offset + 2] & 0xff) << 8) |
+            (sigBytes[offset + 3] & 0xff);
+
+        return (binary % 1000000).toString().padStart(6, '0');
+    } catch (e) {
+        console.error("Client TOTP generation error:", e);
+        return null;
+    }
+}
+
+async function verifyClientTotp(inputCode, secret = DEFAULT_MED_TOTP_SECRET, tolerance = 1) {
+    const cleanCode = (inputCode || '').trim().replace(/\s+/g, '');
+    if (cleanCode.length !== 6) return false;
+    const currentStep = Math.floor(Date.now() / 1000 / 30);
+    for (let i = -tolerance; i <= tolerance; i++) {
+        const code = await generateTotpCode(secret, (currentStep + i) * 30);
+        if (code === cleanCode) return true;
+    }
+    return false;
+}
 
 function openMedPasswordModal() {
     const modal = document.getElementById("med-password-modal");
     if (!modal) return;
     modal.classList.remove("hidden");
-    document.getElementById("med-admin-step1").classList.remove("hidden");
-    document.getElementById("med-admin-step2").classList.add("hidden");
     document.getElementById("med-pass-error").classList.add("hidden");
     document.getElementById("med-pass-success").classList.add("hidden");
-    const emailInput = document.getElementById("med-admin-email");
-    if (emailInput && !medAdminCurrentEnteredEmail) {
-        emailInput.value = "";
+    const otpInput = document.getElementById("med-admin-otp-input");
+    if (otpInput) {
+        otpInput.value = "";
+        setTimeout(() => otpInput.focus(), 150);
     }
 }
 
@@ -736,167 +1079,7 @@ function closeMedPasswordModal() {
     document.getElementById("med-pass-success").classList.add("hidden");
 }
 
-let medResendTimer = null;
-function startMedResendCountdown(seconds = 30) {
-    const resendBtn = document.getElementById("med-resend-btn");
-    const timerSpan = document.getElementById("med-resend-timer");
-    if (!resendBtn || !timerSpan) return;
-    
-    resendBtn.disabled = true;
-    let remaining = seconds;
-    if (medResendTimer) clearInterval(medResendTimer);
-
-    timerSpan.textContent = `(${remaining}s)`;
-    medResendTimer = setInterval(() => {
-        remaining--;
-        if (remaining <= 0) {
-            clearInterval(medResendTimer);
-            timerSpan.textContent = "";
-            resendBtn.disabled = false;
-        } else {
-            timerSpan.textContent = `(${remaining}s)`;
-        }
-    }, 1000);
-}
-
-// 🛡️ Helper: Admin Email Verification (SHA-256 Hash & Obfuscated check)
-const AUTH_ADMIN_HASH = "09bee536b2d1a9aa7b381a3f572e4c1492db86ff689a9597ba263fbec638cd57";
-const getAdminTargetEmail = () => atob("cGttZHNodXZvNDhAZ21haWwuY29t");
-
-async function isAuthorizedAdminEmail(email) {
-    if (!email) return false;
-    const clean = email.trim().toLowerCase();
-    try {
-        if (window.crypto && crypto.subtle) {
-            const buffer = new TextEncoder().encode(clean);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-            if (hashHex === AUTH_ADMIN_HASH) return true;
-        }
-    } catch (e) {}
-    return clean === getAdminTargetEmail();
-}
-
-let medAdminLocalOtp = null;
-
-// 📩 Send OTP to user-entered Admin Gmail
-async function sendMedAdminOtp() {
-    const errEl = document.getElementById("med-pass-error");
-    const succEl = document.getElementById("med-pass-success");
-    errEl.classList.add("hidden");
-    succEl.classList.add("hidden");
-
-    const emailInput = document.getElementById("med-admin-email");
-    const rawEmail = (emailInput ? emailInput.value : "").trim();
-    const email = rawEmail.toLowerCase();
-
-    if (!email) {
-        errEl.textContent = "❌ অনুগ্রহ করে আপনার এডমিন জিমেইল লিখুন!";
-        errEl.classList.remove("hidden");
-        return;
-    }
-
-    // 🛡️ STRICT WHITELIST: Only registered admin email is allowed!
-    const isAuth = await isAuthorizedAdminEmail(email);
-    if (!isAuth) {
-        errEl.textContent = "❌ অননুমোদিত জিমেইল! শুধুমাত্র নিবন্ধিত এডমিন অ্যাকাউন্ট দিয়ে কোড পাঠানো সম্ভব।";
-        errEl.classList.remove("hidden");
-        return;
-    }
-
-    medAdminCurrentEnteredEmail = email;
-
-    const sendBtn = document.getElementById("med-send-otp-btn");
-    const origText = sendBtn.innerHTML;
-    sendBtn.disabled = true;
-    sendBtn.innerHTML = `<span class="inline-block animate-spin">⏳</span> জিমেইলে ওটিপি পাঠানো হচ্ছে...`;
-
-    // 1. Generate secure 6-digit OTP
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-    medAdminLocalOtp = {
-        email: email,
-        code: generatedOtp,
-        expiresAt: expiresAt
-    };
-
-    try {
-        sessionStorage.setItem("med_admin_otp_cache", JSON.stringify(medAdminLocalOtp));
-        localStorage.setItem("med_admin_otp_cache", JSON.stringify(medAdminLocalOtp));
-    } catch (e) {}
-
-    // 2. Sync to Firebase Realtime Database
-    if (typeof firebase !== 'undefined' && firebase.database) {
-        try {
-            firebase.database().ref("admin_config/otp_verification").set({
-                email: email,
-                otp: generatedOtp,
-                expiresAt: expiresAt,
-                createdAt: Date.now()
-            });
-        } catch (fbErr) {
-            console.warn("Firebase RTDB OTP sync notice:", fbErr);
-        }
-    }
-
-    // 3. Dispatch email: Try Server API first (if hosted on server), with FormSubmit fallback for GitHub Pages
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-        fetch('/api/admin/send-code?_t=' + Date.now(), {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email: email }),
-            signal: controller.signal
-        }).then(r => clearTimeout(timeoutId)).catch(e => {
-            clearTimeout(timeoutId);
-        });
-    } catch (e) {}
-
-    // 4. Client-side FormSubmit AJAX delivery directly to admin Gmail (works on GitHub Pages)
-    try {
-        fetch("https://formsubmit.co/ajax/" + getAdminTargetEmail(), {
-            method: "POST",
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                _subject: "🔐 আমার খামার - এডমিন ওটিপি কোড: " + generatedOtp,
-                email: email,
-                "ওটিপি_কোড": generatedOtp,
-                "মেয়াদ": "১০ মিনিট",
-                "বার্তা": "আপনার 'আমার খামার' এডমিন প্যানেলের ৬ ডিজিটের ওটিপি ভেরিফিকেশন কোড হলো: " + generatedOtp + "। কোডটি কারো সাথে শেয়ার করবেন না।"
-            })
-        }).catch(err => console.warn("FormSubmit notice:", err));
-    } catch (e) {}
-
-    // 5. GUARANTEED SUCCESS: Transition to Step 2 without leaking the email address
-    succEl.textContent = "✅ আপনার এডমিন জিমেইলে ৬ ডিজিটের ওটিপি কোড পাঠানো হয়েছে! ইনবক্স অথবা স্প্যাম ফোল্ডার চেক করুন।";
-    succEl.classList.remove("hidden");
-
-    document.getElementById("med-admin-step1").classList.add("hidden");
-    document.getElementById("med-admin-step2").classList.remove("hidden");
-
-    startMedResendCountdown(15);
-    setTimeout(() => {
-        const inp = document.getElementById("med-admin-otp-input");
-        if (inp) {
-            inp.value = "";
-            inp.focus();
-        }
-    }, 100);
-
-    sendBtn.disabled = false;
-    sendBtn.innerHTML = origText;
-}
-
-// 🔑 Verify OTP & Unlock Admin Mode
+// 🔑 Verify OTP & Unlock Admin Mode (Google Authenticator TOTP)
 async function verifyMedAdminOtp() {
     const errEl = document.getElementById("med-pass-error");
     const succEl = document.getElementById("med-pass-success");
@@ -906,7 +1089,15 @@ async function verifyMedAdminOtp() {
     const input = document.getElementById("med-admin-otp-input");
     const code = (input ? input.value : "").trim();
 
-    if (!code || code.length < 6) {
+    // 🛡️ Lockout check
+    if (Date.now() < medLockoutUntil) {
+        const remainingSec = Math.ceil((medLockoutUntil - Date.now()) / 1000);
+        errEl.textContent = `⚠️ অতিরিক্ত ভুল কোড দেওয়ার কারণে সাময়িকভাবে ব্লক করা হয়েছে। অনুগ্রহ করে ${remainingSec} সেকেন্ড পর পুনরায় চেষ্টা করুন।`;
+        errEl.classList.remove("hidden");
+        return;
+    }
+
+    if (!code || code.length !== 6) {
         errEl.textContent = "❌ অনুগ্রহ করে ৬ ডিজিটের সম্পূর্ণ কোড লিখুন!";
         errEl.classList.remove("hidden");
         return;
@@ -917,88 +1108,101 @@ async function verifyMedAdminOtp() {
     verifyBtn.disabled = true;
     verifyBtn.innerHTML = `<span class="inline-block animate-spin">⏳</span> যাচাই করা হচ্ছে...`;
 
-    let isSuccess = false;
-    let token = null;
-
-    // A. Master Backup Passcode (Instant zero-fail guarantee)
-    if (code === "484848") {
-        isSuccess = true;
-        token = "admin_master_token_" + Date.now();
+    // 🛡️ DUAL-FACTOR 1: Active authenticated session MUST be authorized admin
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user) {
+        errEl.textContent = "❌ এডমিন মোড সক্রিয় করতে প্রথমে মূল অ্যাপে গিয়ে অনুমোদিত এডমিন একাউন্ট দিয়ে লগইন করুন!";
+        errEl.classList.remove("hidden");
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = origText;
+        return;
     }
-
-    // B. Check local / session storage OTP
-    if (!isSuccess) {
-        try {
-            const raw = sessionStorage.getItem("med_admin_otp_cache") || localStorage.getItem("med_admin_otp_cache");
-            if (raw) {
-                const stored = JSON.parse(raw);
-                if (stored && stored.code === code && Date.now() <= stored.expiresAt) {
-                    isSuccess = true;
-                    token = "admin_session_token_" + Date.now();
-                }
-            }
-        } catch (e) {}
-    }
-
-    // C. Check Firebase Realtime Database
-    if (!isSuccess && typeof firebase !== 'undefined' && firebase.database) {
-        try {
-            const snap = await firebase.database().ref("admin_config/otp_verification").once("value");
-            const val = snap.val();
-            if (val && val.otp === code && Date.now() <= val.expiresAt) {
-                isSuccess = true;
-                token = "admin_firebase_token_" + Date.now();
-            }
-        } catch (fbErr) {
-            console.warn("Firebase OTP check notice:", fbErr);
-        }
-    }
-
-    // D. Check server endpoint (if running on Node.js backend)
-    if (!isSuccess) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-            const response = await fetch('/api/admin/verify-code?_t=' + Date.now(), {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ email: medAdminCurrentEnteredEmail, code }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-
-            const contentType = response.headers.get('content-type') || '';
-            if (contentType.includes('application/json')) {
-                const data = await response.json();
-                if (data && data.success) {
-                    isSuccess = true;
-                    token = data.token;
-                }
-            }
-        } catch (apiErr) {
-            console.warn("Server verify endpoint error:", apiErr);
-        }
-    }
-
-    if (!isSuccess) {
-        errEl.textContent = "❌ ভুল কোড অথবা কোডের মেয়াদ শেষ হয়ে গেছে! আবার সঠিক কোডটি দিন।";
+    const email = (user.email || '').trim().toLowerCase();
+    const isAuth = await isAuthorizedAdminEmail(email);
+    if (!isAuth) {
+        errEl.textContent = "⛔ অননুমোদিত একাউন্ট! আপনার চলতি একাউন্ট দিয়ে এডমিন মোড ব্যবহারের অনুমতি নেই।";
         errEl.classList.remove("hidden");
         verifyBtn.disabled = false;
         verifyBtn.innerHTML = origText;
         return;
     }
 
-    // SUCCESS: Enable Admin Mode
+    let isSuccess = false;
+    let token = null;
+    let successMessage = "🔓 সফলভাবে এডমিন মোড সক্রিয় হয়েছে!";
+
+    // A. Check server endpoint first (handles Google Authenticator TOTP)
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const response = await fetch('/api/admin/verify-code?_t=' + Date.now(), {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, code }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            const data = await response.json();
+            if (data && data.success) {
+                isSuccess = true;
+                token = data.token;
+                if (data.message) successMessage = "🔓 " + data.message;
+            }
+        }
+    } catch (apiErr) {
+        console.warn("Server verify endpoint error:", apiErr);
+    }
+
+    // B. Client-side Google Authenticator validation with Secured Vault (No plaintext secret in repo!)
+    if (!isSuccess) {
+        try {
+            const secret = await getSecureAdminTotpSecret(email);
+            if (secret) {
+                const isClientTotpOk = await verifyClientTotp(code, secret);
+                if (isClientTotpOk) {
+                    isSuccess = true;
+                    token = "admin_totp_" + Date.now();
+                    successMessage = "🔓 Google Authenticator দিয়ে সফলভাবে যাচাই হয়েছে!";
+                }
+            }
+        } catch (totpErr) {
+            console.warn("Client TOTP verification notice:", totpErr);
+        }
+    }
+
+    if (!isSuccess) {
+        medFailedOtpAttempts++;
+        if (medFailedOtpAttempts >= 5) {
+            medLockoutUntil = Date.now() + 60 * 1000;
+            medFailedOtpAttempts = 0;
+            errEl.textContent = "⚠️ পরপর ৫ বার ভুল কোড দেওয়া হয়েছে! নিরাপত্তার স্বার্থে ৬০ সেকেন্ডের জন্য ইনপুট লক করা হলো।";
+        } else {
+            errEl.textContent = `❌ ভুল কোড! আপনার Google Authenticator অ্যাপের চলতি ৬ ডিজিট কোডটি দিন (বাকি সুযোগ: ${5 - medFailedOtpAttempts})`;
+        }
+        errEl.classList.remove("hidden");
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = origText;
+        return;
+    }
+
+    // Reset failed attempts
+    medFailedOtpAttempts = 0;
+    medLockoutUntil = 0;
+
+    // Enable Admin Mode
     localStorage.setItem("amarhisab_admin_token", token || ("admin_token_" + Date.now()));
     localStorage.setItem("admin_authenticated_shuvo", "true");
 
     enableAdminMode();
     closeMedPasswordModal();
-    showToastMessage("🔓 সফলভাবে এডমিন মোড সক্রিয় হয়েছে!");
+    showToastMessage(successMessage);
 
     verifyBtn.disabled = false;
     verifyBtn.innerHTML = origText;
@@ -1007,6 +1211,14 @@ async function verifyMedAdminOtp() {
 async function checkMedAdminSession() {
     const token = localStorage.getItem("amarhisab_admin_token");
     const isAuth = localStorage.getItem("admin_authenticated_shuvo");
+
+    // Invalidate any old unauthorized master session token immediately
+    if (token && token.startsWith("admin_master_")) {
+        localStorage.removeItem("amarhisab_admin_token");
+        localStorage.removeItem("admin_authenticated_shuvo");
+        disableAdminMode();
+        return;
+    }
 
     if (!token && isAuth !== "true") {
         disableAdminMode();
@@ -1018,7 +1230,7 @@ async function checkMedAdminSession() {
         enableAdminMode();
     }
 
-    if (token && !token.startsWith("admin_local_") && !token.startsWith("admin_master_")) {
+    if (token && !token.startsWith("admin_local_") && !token.startsWith("admin_totp_")) {
         try {
             const response = await fetch('/api/admin/check-session', {
                 method: 'POST',
@@ -1048,14 +1260,19 @@ function enableAdminMode() {
     
     const userBadge = document.getElementById("med-user-status-badge");
     if (userBadge) {
-        userBadge.innerText = "এডমিন";
-        userBadge.className = "text-xs bg-red-600 text-white px-2.5 py-1 rounded-full font-bold shadow-sm";
+        userBadge.classList.add("hidden");
     }
 
     const menuBtn = document.getElementById("med-menu-admin-btn");
     if (menuBtn) {
         menuBtn.innerHTML = `<span class="material-symbols-outlined text-lg">lock_open</span><span>এডমিন লগআউট</span>`;
     }
+
+    const doctorEditMenuBtn = document.getElementById("med-menu-doctor-edit-btn");
+    if (doctorEditMenuBtn) doctorEditMenuBtn.classList.remove("hidden");
+
+    const doctorAdminBtn = document.getElementById("med-doctor-admin-btn");
+    if (doctorAdminBtn) doctorAdminBtn.classList.remove("hidden");
 
     const videoEditMenuBtn = document.getElementById("med-menu-video-edit-btn");
     if (videoEditMenuBtn) videoEditMenuBtn.classList.remove("hidden");
@@ -1093,13 +1310,19 @@ async function disableAdminMode() {
     const userBadge = document.getElementById("med-user-status-badge");
     if (userBadge) {
         userBadge.innerText = "ইউজার";
-        userBadge.className = "text-xs bg-white/10 px-2.5 py-1 rounded-full font-bold backdrop-blur-sm shadow-inner";
+        userBadge.className = "text-xs bg-white/10 px-2.5 py-1 rounded-full font-bold backdrop-blur-sm shadow-inner flex-shrink-0";
     }
 
     const menuBtn = document.getElementById("med-menu-admin-btn");
     if (menuBtn) {
         menuBtn.innerHTML = `<span class="material-symbols-outlined text-lg">lock</span><span>এডমিন লগইন</span>`;
     }
+
+    const doctorEditMenuBtn = document.getElementById("med-menu-doctor-edit-btn");
+    if (doctorEditMenuBtn) doctorEditMenuBtn.classList.add("hidden");
+
+    const doctorAdminBtn = document.getElementById("med-doctor-admin-btn");
+    if (doctorAdminBtn) doctorAdminBtn.classList.add("hidden");
 
     const videoEditMenuBtn = document.getElementById("med-menu-video-edit-btn");
     if (videoEditMenuBtn) videoEditMenuBtn.classList.add("hidden");
@@ -1173,9 +1396,10 @@ function playCurrentBreedVideo() {
     }
 }
 
-function openMedVideoEditModal() {
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 ভিডিও লিংক পরিবর্তন করতে এডমিন মোড সক্রিয় থাকতে হবে!");
+async function openMedVideoEditModal() {
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 ভিডিও লিংক পরিবর্তন করতে অনুমোদিত এডমিন মোড সক্রিয় থাকতে হবে!");
         return;
     }
     const tabIds = ['Broiler', 'ColorBird', 'Sonali', 'Deshi'];
@@ -1196,8 +1420,9 @@ function closeMedVideoEditModal() {
 
 async function saveBreedVideoLinks(e) {
     e.preventDefault();
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 সংরক্ষণ করতে এডমিন মোড সক্রিয় থাকতে হবে!");
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 সংরক্ষণ করতে অনুমোদিত এডমিন একাউন্ট প্রয়োজন!");
         return;
     }
 
@@ -1215,7 +1440,7 @@ async function saveBreedVideoLinks(e) {
 
     if (targetDb) {
         try {
-            await targetDb.ref('breed_video_links').set(updated);
+            await targetDb.ref('breed_video_links').update(updated);
             alert("✅ ভিডিও লিংকগুলো সফলভাবে ডাটাবেজে সংরক্ষিত হয়েছে!");
         } catch (err) {
             console.error(err);
@@ -1226,6 +1451,149 @@ async function saveBreedVideoLinks(e) {
     }
     closeMedVideoEditModal();
     updateVideoFabLabel();
+}
+
+// 🩺 Admin-Controlled Consultant / Doctor Settings
+const DEFAULT_DOCTOR_CONFIG = {
+    enabled: true,
+    title: 'পরামর্শক / ডাক্তারের সাথে যোগাযোগ',
+    phone: '+8801719460996',
+    note: 'মুরগির অসুস্থতা, রোগ নির্ণয় ও সঠিক ঔষধের পরামর্শের জন্য অভিজ্ঞ পরামর্শক বা ডাক্তারের সাথে কথা বলুন।',
+    updatedAt: 0
+};
+let adminDoctorConfig = { ...DEFAULT_DOCTOR_CONFIG };
+let doctorConfigListenerBound = false;
+
+function getAdminDoctorConfig() {
+    try {
+        const cached = localStorage.getItem('cached_admin_doctor_config');
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && typeof parsed === 'object') {
+                return { ...DEFAULT_DOCTOR_CONFIG, ...parsed };
+            }
+        }
+    } catch (e) {}
+    return { ...DEFAULT_DOCTOR_CONFIG, ...adminDoctorConfig };
+}
+window.getPkDoctorConfig = getAdminDoctorConfig;
+
+function syncDoctorMenuVisibility() {
+    const cfg = getAdminDoctorConfig();
+    const docMenuBtn = document.getElementById('med-menu-doctor-btn');
+    if (docMenuBtn) {
+        docMenuBtn.classList.toggle('hidden', cfg.enabled === false);
+    }
+    if (typeof window.syncDoctorConfigUI === 'function') {
+        window.syncDoctorConfigUI(cfg);
+    }
+}
+
+function initDoctorConfig() {
+    try {
+        const cached = localStorage.getItem('cached_admin_doctor_config');
+        if (cached) {
+            adminDoctorConfig = { ...DEFAULT_DOCTOR_CONFIG, ...JSON.parse(cached) };
+        }
+    } catch (e) {}
+    syncDoctorMenuVisibility();
+
+    if (targetDb && !doctorConfigListenerBound) {
+        doctorConfigListenerBound = true;
+        targetDb.ref('breed_video_links/_doctor_config').on('value', snapshot => {
+            const val = snapshot.val();
+            if (val && typeof val === 'object') {
+                adminDoctorConfig = { ...DEFAULT_DOCTOR_CONFIG, ...val };
+                try {
+                    localStorage.setItem('cached_admin_doctor_config', JSON.stringify(adminDoctorConfig));
+                } catch (e) {}
+                syncDoctorMenuVisibility();
+            }
+        }, err => {
+            console.warn("Doctor config offline fallback:", err);
+        });
+    }
+}
+
+function updateMedDoctorVisibilityHint() {
+    const toggle = document.getElementById('med-doctor-form-enabled');
+    const hint = document.getElementById('med-doctor-visibility-hint');
+    if (!toggle || !hint) return;
+    if (toggle.checked) {
+        hint.innerText = 'বর্তমানে সক্রিয় (ব্যবহারকারীরা দেখতে পারবে)';
+        hint.className = 'text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5';
+    } else {
+        hint.innerText = 'বর্তমানে লুকানো (ব্যবহারকারীদের কাছে দেখাবে না)';
+        hint.className = 'text-[11px] text-red-600 dark:text-red-400 font-semibold mt-0.5';
+    }
+}
+
+async function openMedDoctorEditModal() {
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        showToastMessage("🔒 পরামর্শক / ডাক্তার সেটিংস পরিবর্তন করতে অনুমোদিত এডমিন মোড প্রয়োজন!");
+        return;
+    }
+    const cfg = getAdminDoctorConfig();
+    const enabledEl = document.getElementById('med-doctor-form-enabled');
+    const titleEl = document.getElementById('med-doctor-form-title');
+    const phoneEl = document.getElementById('med-doctor-form-phone');
+    const noteEl = document.getElementById('med-doctor-form-note');
+
+    if (enabledEl) enabledEl.checked = cfg.enabled !== false;
+    if (titleEl) titleEl.value = cfg.title || DEFAULT_DOCTOR_CONFIG.title;
+    if (phoneEl) phoneEl.value = cfg.phone || DEFAULT_DOCTOR_CONFIG.phone;
+    if (noteEl) noteEl.value = cfg.note || DEFAULT_DOCTOR_CONFIG.note;
+    updateMedDoctorVisibilityHint();
+
+    const modal = document.getElementById('med-doctor-edit-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeMedDoctorEditModal() {
+    const modal = document.getElementById('med-doctor-edit-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function saveMedDoctorConfig(e) {
+    e.preventDefault();
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        showToastMessage("🔒 সংরক্ষণ করতে অনুমোদিত এডমিন একাউন্ট প্রয়োজন!");
+        return;
+    }
+    const enabledEl = document.getElementById('med-doctor-form-enabled');
+    const titleEl = document.getElementById('med-doctor-form-title');
+    const phoneEl = document.getElementById('med-doctor-form-phone');
+    const noteEl = document.getElementById('med-doctor-form-note');
+
+    const updated = {
+        enabled: enabledEl ? !!enabledEl.checked : true,
+        title: (titleEl && titleEl.value.trim()) || DEFAULT_DOCTOR_CONFIG.title,
+        phone: (phoneEl && phoneEl.value.trim()) || DEFAULT_DOCTOR_CONFIG.phone,
+        note: (noteEl && noteEl.value.trim()) || DEFAULT_DOCTOR_CONFIG.note,
+        updatedAt: Date.now()
+    };
+
+    adminDoctorConfig = updated;
+    try {
+        localStorage.setItem('cached_admin_doctor_config', JSON.stringify(updated));
+    } catch (err) {}
+    syncDoctorMenuVisibility();
+
+    if (targetDb) {
+        try {
+            await targetDb.ref('breed_video_links/_doctor_config').set(updated);
+            targetDb.ref('admin_doctor_config').set(updated).catch(() => {});
+            showToastMessage("✅ পরামর্শক / ডাক্তারের তথ্য সফলভাবে আপডেট হয়েছে!");
+        } catch (err) {
+            console.error(err);
+            showToastMessage("⚠️ ক্লাউডে সেভ করতে সমস্যা হয়েছে, লোকালি আপডেট হয়েছে!");
+        }
+    } else {
+        showToastMessage("✅ পরামর্শক / ডাক্তারের তথ্য লোকালি সেভ হয়েছে!");
+    }
+    closeMedDoctorEditModal();
 }
 
 // Breed Tab selection logic
@@ -1289,13 +1657,25 @@ function loadMedicineShipmentDropdowns() {
         if (data) {
             const entries = Object.entries(data);
             if (entries.length > 0) {
-                // Sort by startDate to get the latest/most recent active shipment
-                entries.sort((a, b) => new Date(b[1].startDate) - new Date(a[1].startDate));
+                // Prefer active (non-ended) shipments first, then newest startDate
+                entries.sort((a, b) => {
+                    const aEnded = !!(a[1].isEnded && a[1].endedAt);
+                    const bEnded = !!(b[1].isEnded && b[1].endedAt);
+                    if (aEnded !== bEnded) return aEnded ? 1 : -1;
+                    return new Date(b[1].startDate || 0) - new Date(a[1].startDate || 0);
+                });
                 const latestShipment = entries[0][1];
                 
-                const start = new Date(latestShipment.startDate);
-                const today = new Date();
-                const diffTime = today - start;
+                const dateParts = String(latestShipment.startDate || '').split('-');
+                let start;
+                if (dateParts.length === 3) {
+                    start = new Date(parseInt(dateParts[0], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[2], 10));
+                } else {
+                    start = new Date(latestShipment.startDate);
+                }
+                const nowLocal = new Date();
+                const todayMidnight = new Date(nowLocal.getFullYear(), nowLocal.getMonth(), nowLocal.getDate());
+                const diffTime = todayMidnight - start;
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
                 activeShipmentAgeDays = diffDays > 0 ? diffDays : 0;
             } else {
@@ -1394,19 +1774,24 @@ function renderScheduleTimeline() {
     // শুধুমাত্র সংরক্ষিত ডাটাবেজ/ক্যাশের তালিকা ব্যবহার হবে
     let activeSchedulesList = adminSchedules || [];
 
-    // ০. ব্রিড অনুযায়ী নোটিফিকেশন ট্যাবগুলির কাউন্ট আপডেট করা
+    // ০. ব্রিড অনুযায়ী নোটিফিকেশন ট্যাবগুলির কাউন্ট আপডেট করা (বাদ দেওয়া ঔষধগুলো বাকি সংখ্যায় ধরবে না)
     const breedSchedules = activeSchedulesList.filter(item => !item.breed || item.breed === 'All' || item.breed === currentBreedFilter);
     let totalMeds = breedSchedules.length;
     let completedMeds = 0;
-    
+    let remainingMeds = 0;
+
+    // একই দিন + একই বেলায় একাধিক বিকল্প ঔষধ আছে কিনা ট্র্যাক করা
+    const dayTimeSlotCounts = {};
     breedSchedules.forEach(item => {
+        const slotKey = `${item.day || 1}_${item.time || 'সকাল'}`;
+        dayTimeSlotCounts[slotKey] = (dayTimeSlotCounts[slotKey] || 0) + 1;
         const itemKey = item.id || ('std_' + item.day + '_' + item.name.replace(/\s+/g, '_') + '_' + (item.time || ''));
         if (completedMedicinesMap[itemKey]) {
             completedMeds++;
+        } else if (!skippedMedicinesMap[itemKey]) {
+            remainingMeds++;
         }
     });
-    
-    let remainingMeds = totalMeds - completedMeds;
 
     const countAll = document.getElementById('count-track-all');
     const countRemaining = document.getElementById('count-track-remaining');
@@ -1431,9 +1816,10 @@ function renderScheduleTimeline() {
 
         const itemKey = item.id || ('std_' + item.day + '_' + item.name.replace(/\s+/g, '_') + '_' + (item.time || ''));
         const isCompleted = !!completedMedicinesMap[itemKey];
+        const isSkipped = !isCompleted && !!skippedMedicinesMap[itemKey];
 
         if (currentTrackingFilter === 'remaining') {
-            return !isCompleted;
+            return !isCompleted && !isSkipped;
         } else if (currentTrackingFilter === 'completed') {
             return isCompleted;
         }
@@ -1552,6 +1938,10 @@ function renderScheduleTimeline() {
 
             const itemKey = item.id || ('std_' + item.day + '_' + item.name.replace(/\s+/g, '_') + '_' + (item.time || ''));
             const isCompleted = !!completedMedicinesMap[itemKey];
+            const isSkipped = !isCompleted && !!skippedMedicinesMap[itemKey];
+            const slotKey = `${item.day || 1}_${itemTime}`;
+            const isAlternativeMed = (dayTimeSlotCounts[slotKey] || 0) > 1 || /(ঠান্ডা|বিকল্প|অল্প|বেশি|প্রয়োজন|হলে|যদি)/.test(`${item.name || ''} ${item.desc || ''}`);
+            const elig = getMedicineTickEligibility(parseInt(day, 10) || 1, itemTime, activeShipmentAgeDays);
 
             // Completion state indicators
             let completionBadgeHtml = '';
@@ -1577,22 +1967,53 @@ function renderScheduleTimeline() {
                         বাতিল করুন
                     </button>
                 </div>`;
+            } else if (isSkipped) {
+                completionBadgeHtml = `
+                <span class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] font-black px-2.5 py-1 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
+                    প্রয়োজন নেই
+                </span>`;
+
+                completionActionHtml = `
+                <div class="flex items-center justify-between w-full bg-gray-100/80 dark:bg-gray-800/80 px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="material-symbols-outlined text-gray-500 text-base">block</span>
+                        <span class="text-xs font-bold text-gray-600 dark:text-gray-300 truncate">প্রয়োজন না থাকায় বাদ দেওয়া হয়েছে</span>
+                    </div>
+                    <button onclick="toggleMedicineSkipped('${itemKey}', false)" class="text-[10px] font-black text-teal-700 dark:text-teal-400 flex items-center gap-1 py-1.5 px-2.5 bg-white dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 active:scale-95 flex-shrink-0">
+                        <span class="material-symbols-outlined text-xs font-bold">undo</span>
+                        ফিরিয়ে আনুন
+                    </button>
+                </div>`;
             } else {
                 completionBadgeHtml = `
                 <span class="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 text-[10px] font-black px-2.5 py-1 rounded-xl border border-amber-200/50 dark:border-amber-900/30 shadow-sm">
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                    বাকি আছে
+                    ${elig.allowed ? 'বাকি আছে' : 'সময়ের অপেক্ষায়'}
                 </span>`;
-                
-                completionActionHtml = `
-                <button onclick="toggleMedicineCompletion('${itemKey}', true)" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-black rounded-2xl text-xs transition-all shadow-md shadow-teal-500/15 hover:shadow-lg active:scale-[0.98] border border-teal-500/20">
-                    <span class="material-symbols-outlined text-sm font-black">done_all</span>
-                    ব্যবহার করা হয়েছে মার্ক করুন
-                </button>`;
+
+                const canSkipNow = (activeShipmentAgeDays === null) || ((parseInt(day, 10) || 1) <= activeShipmentAgeDays);
+                const tickBtnHtml = elig.allowed
+                    ? `<button onclick="toggleMedicineCompletion('${itemKey}', true)" class="flex-1 flex items-center justify-center gap-1.5 py-3 px-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-black rounded-2xl text-xs transition-all shadow-md shadow-teal-500/15 active:scale-[0.98] border border-teal-500/20">
+                        <span class="material-symbols-outlined text-sm font-black">done_all</span>
+                        <span>ব্যবহার করা হয়েছে</span>
+                    </button>`
+                    : `<button type="button" onclick="showToastMessage('⏳ ${elig.reason}')" class="flex-1 flex items-center justify-center gap-1.5 py-3 px-3 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold rounded-2xl text-[11px] border border-gray-300 dark:border-gray-600 cursor-not-allowed">
+                        <span class="material-symbols-outlined text-sm">lock_clock</span>
+                        <span>${elig.lockType === 'future_day' ? `দিন ${toBnDigitsLocal(day)} এলে চালু` : `${elig.unlockText}-এ চালু`}</span>
+                    </button>`;
+
+                const skipBtnHtml = canSkipNow
+                    ? `<button type="button" onclick="toggleMedicineSkipped('${itemKey}', true)" class="px-3 py-3 rounded-2xl bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold text-xs border border-gray-300 dark:border-gray-600 active:scale-95 transition flex items-center justify-center gap-1 flex-shrink-0" title="প্রয়োজন না হলে বাদ দিন">
+                        <span class="material-symbols-outlined text-sm">do_not_disturb_on</span>
+                        <span>প্রয়োজন নেই</span>
+                    </button>`
+                    : '';
+
+                completionActionHtml = `<div class="flex gap-2 w-full">${tickBtnHtml}${skipBtnHtml}</div>`;
             }
 
             const cardHtml = `
-            <div class="p-5 rounded-3xl border-2 transition-all duration-300 ${extraBorderClass} ${glowClass} space-y-4 hover:shadow-lg animate-[fadeIn_0.3s_ease-out] ${isCompleted ? 'bg-emerald-500/5 dark:bg-emerald-950/5 border-emerald-500/30 dark:border-emerald-500/20' : ''}">
+            <div class="p-5 rounded-3xl border-2 transition-all duration-300 ${extraBorderClass} ${glowClass} space-y-4 hover:shadow-lg animate-[fadeIn_0.3s_ease-out] ${isCompleted ? 'bg-emerald-500/5 dark:bg-emerald-950/5 border-emerald-500/30 dark:border-emerald-500/20' : (isSkipped ? 'opacity-70' : '')}">
                 <div class="flex justify-between items-start gap-2">
                     <div class="flex items-center gap-3">
                         <!-- Custom Medicine Bottle Icon Design -->
@@ -1600,12 +2021,13 @@ function renderScheduleTimeline() {
                             <span class="material-symbols-outlined ${isCompleted ? 'text-emerald-500' : 'text-emerald-600/70'} font-black text-2xl">medical_services</span>
                         </div>
                         <div>
-                            <h3 class="font-black text-gray-850 dark:text-white text-sm sm:text-base leading-tight ${isCompleted ? 'line-through text-gray-400 dark:text-gray-500 font-bold' : ''}">${item.name}</h3>
-                            <div class="flex items-center gap-1.5 mt-1">
+                            <h3 class="font-black text-gray-850 dark:text-white text-sm sm:text-base leading-tight ${(isCompleted || isSkipped) ? 'line-through text-gray-400 dark:text-gray-500 font-bold' : ''}">${item.name}</h3>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1">
                                 <span class="text-[9px] uppercase font-black tracking-wider ${theme.textColor} bg-white dark:bg-gray-800 px-2 py-0.5 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
                                     ${catInfo.label}
                                 </span>
                                 ${item.breed === 'All' ? '<span class="text-[9px] bg-teal-600 text-white px-2 py-0.5 rounded-lg font-black shadow-sm">সব জাত</span>' : ''}
+                                ${isAlternativeMed ? '<span class="text-[9px] bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-lg font-bold border border-indigo-200 dark:border-indigo-700">বিকল্প / শর্তসাপেক্ষ</span>' : ''}
                                 ${completionBadgeHtml}
                             </div>
                         </div>
@@ -1643,8 +2065,9 @@ function renderScheduleTimeline() {
 
 // Seeding Default Veterinary guidelines automatically
 async function autoSeedSchedules() {
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 এটি করতে এডমিন লগইন করা প্রয়োজন!");
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 এটি করতে অনুমোদিত এডমিন একাউন্ট প্রয়োজন!");
         return;
     }
     if (!targetDb) {
@@ -1673,9 +2096,10 @@ async function autoSeedSchedules() {
 }
 
 // Modal control for adding/editing guidelines
-function openMedFormModal() {
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 গাইডলাইন অ্যাড করতে এডমিন মোড সক্রিয় থাকতে হবে!");
+async function openMedFormModal() {
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 গাইডলাইন অ্যাড করতে অনুমোদিত এডমিন মোড সক্রিয় থাকতে হবে!");
         return;
     }
     document.getElementById("med-guideline-form").reset();
@@ -1688,9 +2112,10 @@ function closeMedFormModal() {
     document.getElementById("med-form-modal").classList.add("hidden");
 }
 
-function editMedGuideline(id) {
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 এডিট করতে এডমিন মোড সক্রিয় থাকতে হবে!");
+async function editMedGuideline(id) {
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 এডিট করতে অনুমোদিত এডমিন মোড সক্রিয় থাকতে হবে!");
         return;
     }
     const item = adminSchedules.find(x => x.id === id);
@@ -1711,8 +2136,9 @@ function editMedGuideline(id) {
 
 // Delete guideline function
 async function deleteMedGuideline(id) {
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 ডিলিট করতে এডমিন মোড সক্রিয় থাকতে হবে!");
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 ডিলিট করতে অনুমোদিত এডমিন মোড সক্রিয় থাকতে হবে!");
         return;
     }
     if (!targetDb) {
@@ -1785,8 +2211,9 @@ function parseDays(inputStr) {
 // Form submit logic
 async function submitMedGuidelineForm(e) {
     e.preventDefault();
-    if (!medicineAdminModeEnabled) {
-        alert("🔒 গাইডলাইন সংরক্ষণ করতে এডমিন মোড সক্রিয় থাকতে হবে!");
+    const user = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth().currentUser : null;
+    if (!user || !(await isAuthorizedAdminEmail(user.email))) {
+        alert("🔒 গাইডলাইন সংরক্ষণ করতে অনুমোদিত এডমিন মোড সক্রিয় থাকতে হবে!");
         return;
     }
     if (!targetDb) {

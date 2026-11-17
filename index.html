@@ -172,6 +172,23 @@
                     </div>
                 </div>
 
+                <!-- 🤖 PK Chat Bot: Personal Assistant & Daily Medicine Monitor -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <h2 class="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-700/50">পার্সোনাল অ্যাসিস্ট্যান্ট</h2>
+                    <button onclick="openPkChatBot()" class="w-full min-h-[68px] flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left group">
+                        <div class="flex items-center gap-3 min-w-0 pr-2">
+                            <div class="w-11 h-11 rounded-2xl bg-teal-700 text-white flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined">smart_toy</span>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-sm text-gray-900 dark:text-white">PK Chat Bot</h3>
+                                <p id="pk-bot-settings-status" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">প্রতিদিনের ঔষধ চেক-ইন ও খামারের ব্যক্তিগত সহকারী</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-400 group-hover:text-teal-700 dark:group-hover:text-teal-400 flex-shrink-0 transition-colors">chevron_right</span>
+                    </button>
+                </div>
+
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <h2 class="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-700/50">টুলস</h2>
                     <button onclick="navigate('due-list-page')" class="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition border-b border-gray-100 dark:border-gray-700"><span class="flex items-center gap-3 font-medium dark:text-gray-200"><span class="material-symbols-outlined text-orange-500">account_balance_wallet</span> বাকির খাতা</span> <span class="material-symbols-outlined text-gray-400">chevron_right</span></button>
@@ -233,6 +250,23 @@
                     <input type="file" id="backup-file-input" accept=".json,application/json" class="hidden" onchange="handleBackupFileSelect(event)">
                 </div>
 
+                <!-- 👨‍💻 ডেভেলপার / এডমিনের সাথে যোগাযোগ -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <h2 class="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-700/50">যোগাযোগ ও সাপোর্ট</h2>
+                    <button onclick="openPkDevContactModal()" class="w-full min-h-[60px] flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left">
+                        <div class="flex items-center gap-3 min-w-0 pr-2">
+                            <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined">support_agent</span>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-sm text-gray-900 dark:text-white">ডেভেলপার / এডমিনের সাথে যোগাযোগ</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">সাপোর্ট ও তথ্য পোর্টাল</p>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-gray-400 flex-shrink-0">chevron_right</span>
+                    </button>
+                </div>
+
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <h2 class="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-700/50">একাউন্ট</h2>
                     <button onclick="logoutUser()" class="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition"><span class="material-symbols-outlined">logout</span> লগআউট করুন</button>
@@ -251,6 +285,7 @@
                 </div>
             </header>
             <div class="p-5 space-y-5 pb-28">
+                <div id="details-timer-status-card" class="hidden"></div>
                 <div id="details-summary-cards" class="grid grid-cols-2 gap-4"></div>
                 <div class="bg-gray-200 dark:bg-gray-700 p-1 rounded-xl flex shadow-inner"><button id="expense-tab-button" onclick="switchTab('expense')" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all shadow-sm bg-white dark:bg-gray-600 text-gray-800 dark:text-white">ব্যয়</button><button id="income-tab-button" onclick="switchTab('income')" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all text-gray-500 dark:text-gray-400">আয়</button></div>
                 <div id="expense-list-container" class="space-y-3"></div><div id="income-list-container" class="hidden space-y-3"></div>
@@ -275,7 +310,7 @@
 
         <div id="add-shipment-button-container" class="fixed bottom-24 right-6 z-20"><button onclick="navigate('add-shipment-page')" class="w-14 h-14 rounded-full bg-teal-700 text-white shadow-xl flex items-center justify-center transform transition hover:scale-110 active:scale-95"><span class="material-symbols-outlined text-3xl">add</span></button></div>
 
-        <nav class="absolute bottom-0 left-0 right-0 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700"><div class="flex h-16 items-center justify-around"><a href="#" onclick="navigateToTab('dashboard')" class="flex flex-col items-center gap-1 text-teal-700 dark:text-teal-400 nav-item" id="nav-dashboard"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px] font-bold">ড্যাশবোর্ড</span></a><a href="#" onclick="navigateToTab('shipments-page')" class="flex flex-col items-center gap-1 text-gray-400 nav-item" id="nav-shipments-page"><span class="material-symbols-outlined">list_alt</span><span class="text-[10px] font-bold">চালান</span></a><a href="#" onclick="navigateToTab('medicine-page')" class="flex flex-col items-center gap-1 text-gray-400 nav-item" id="nav-medicine-page"><span class="material-symbols-outlined">vaccines</span><span class="text-[10px] font-bold">ঔষধ</span></a><a href="#" onclick="navigateToTab('settings-page')" class="flex flex-col items-center gap-1 text-gray-400 nav-item" id="nav-settings-page"><span class="material-symbols-outlined">settings</span><span class="text-[10px] font-bold">সেটিংস</span></a></div></nav>
+        <nav id="main-bottom-nav" class="absolute bottom-0 left-0 right-0 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700"><div class="flex h-16 items-center justify-around"><a href="javascript:void(0)" onclick="navigateToTab('dashboard', event)" class="flex flex-col items-center gap-1 text-teal-700 dark:text-teal-400 nav-item" id="nav-dashboard"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px] font-bold">ড্যাশবোর্ড</span></a><a href="javascript:void(0)" onclick="navigateToTab('shipments-page', event)" class="flex flex-col items-center gap-1 text-gray-400 nav-item" id="nav-shipments-page"><span class="material-symbols-outlined">list_alt</span><span class="text-[10px] font-bold">চালান</span></a><a href="javascript:void(0)" onclick="navigateToTab('medicine-page', event)" class="flex flex-col items-center gap-1 text-gray-400 nav-item" id="nav-medicine-page"><span class="material-symbols-outlined">vaccines</span><span class="text-[10px] font-bold">ঔষধ</span></a><a href="javascript:void(0)" onclick="navigateToTab('settings-page', event)" class="flex flex-col items-center gap-1 text-gray-400 nav-item" id="nav-settings-page"><span class="material-symbols-outlined">settings</span><span class="text-[10px] font-bold">সেটিংস</span></a></div></nav>
     </main>
     
     <!-- 🎥 Video Modal Player -->
@@ -382,6 +417,28 @@
             </div>
         </div>
     </div>
+    <!-- ⏱️ End Shipment Timer Confirmation Modal -->
+    <div id="end-shipment-modal" class="hidden fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onclick="if(event.target===this) closeEndShipmentModal()">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-gray-700 text-center space-y-4">
+            <div class="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
+                <span class="material-symbols-outlined text-3xl">timer_off</span>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">চালান শেষ করবেন?</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">
+                    চালান শেষ করলে এই চালানের চলমান টাইমার ঘড়ি স্থায়ীভাবে বন্ধ হয়ে যাবে এবং মোট সময় সংরক্ষিত থাকবে।
+                </p>
+            </div>
+            <div class="flex gap-2.5 pt-1">
+                <button type="button" onclick="closeEndShipmentModal()" class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    বাতিল
+                </button>
+                <button type="button" id="confirm-end-shipment-btn" onclick="confirmEndCurrentShipment()" class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-md transition">
+                    হ্যাঁ, চালান শেষ
+                </button>
+            </div>
+        </div>
+    </div>
     <div id="toast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2 rounded-full text-sm z-50 shadow-lg"></div>
     <div id="pdf-overlay" class="hidden"><div id="pdf-content" style="padding:30px;font-family:'Noto Sans Bengali';background:white;color:black;"><div style="text-align:center;border-bottom:2px solid #00796B;padding-bottom:10px;margin-bottom:20px;"><h1 style="font-size:24px;color:#00796B;">আমার হিসাব</h1><p>পোল্ট্রি খামার রিপোর্ট</p></div><table style="width:100%;margin-bottom:20px;"><tr><td><h2 id="pdf-shipment-name"></h2><p id="pdf-shipment-date"></p></td><td style="text-align:right;"><span id="pdf-chicken-count"></span></td></tr></table><div style="display:flex;margin-bottom:20px;border:1px solid #ddd;"><div style="flex:1;background:#e0f7fa;padding:10px;border-right:1px solid #ddd;">আয়<br><b id="pdf-total-income"></b></div><div style="flex:1;background:#ffebee;padding:10px;border-right:1px solid #ddd;">ব্যয়<br><b id="pdf-total-expense"></b></div><div style="flex:1;background:#f1f8e9;padding:10px;">লাভ<br><b id="pdf-net-profit"></b></div></div><table class="pdf-table" style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f2f2f2;"><th>তারিখ</th><th>বিবরণ</th><th>ধরন</th><th>পরিমাণ</th></tr></thead><tbody id="pdf-table-body"></tbody></table><div style="margin-top:30px;text-align:right;font-size:10px;">Dev - Shuvo</div></div></div>
 
@@ -410,6 +467,7 @@
         let currentEntryType = 'expense';
         let currentEntryId = null;
         let currentShipmentData = {};
+        let currentShipmentDetailRef = null;
         
         let activeShipmentsForTimer = {};
         let activeAutoCloseTimers = {};
@@ -481,17 +539,46 @@
             });
         }
 
-        function navigate(p) { document.querySelectorAll('.page').forEach(e=>e.classList.remove('page-visible')); document.getElementById(p).classList.add('page-visible'); pageHistory.push(p); document.getElementById('add-shipment-button-container').classList.toggle('hidden', !['dashboard','shipments-page'].includes(p)); }
+        function navigate(p) { 
+            if (p === 'medicine-page' && !document.getElementById('medicine-page') && typeof injectMedicinePageIfReady === 'function') {
+                injectMedicinePageIfReady();
+            }
+            const targetEl = document.getElementById(p);
+            if (!targetEl) {
+                console.warn(`Target page "${p}" not found.`);
+                return;
+            }
+            document.querySelectorAll('.page').forEach(e=>e.classList.remove('page-visible')); 
+            targetEl.classList.add('page-visible'); 
+            pageHistory.push(p); 
+            const addShipBtn = document.getElementById('add-shipment-button-container');
+            if (addShipBtn) {
+                addShipBtn.classList.toggle('hidden', !['dashboard','shipments-page'].includes(p));
+            }
+            const bottomNav = document.getElementById('main-bottom-nav');
+            if (bottomNav) {
+                bottomNav.classList.toggle('hidden', p === 'pk-chatbot-page');
+            }
+        }
         function goBack() { if(pageHistory.length>1) pageHistory.pop(); navigate(pageHistory[pageHistory.length-1]); pageHistory.pop(); }
-        function navigateToTab(p) { 
+        function navigateToTab(p, evt) { 
+            if (evt && evt.preventDefault) evt.preventDefault();
             pageHistory=[p]; 
             navigate(p); 
             document.querySelectorAll('.nav-item').forEach(e=>{ 
                 e.classList.remove('text-teal-700', 'dark:text-teal-400'); 
                 if(e.id===`nav-${p}`) e.classList.add('text-teal-700', 'dark:text-teal-400'); 
             }); 
-            if (p === 'medicine-page' && typeof loadMedicineShipmentDropdowns === 'function') {
-                loadMedicineShipmentDropdowns();
+            if (p === 'medicine-page') {
+                if (typeof loadMedicineShipmentDropdowns === 'function') {
+                    loadMedicineShipmentDropdowns();
+                }
+                if (typeof renderScheduleTimeline === 'function') {
+                    renderScheduleTimeline();
+                }
+            }
+            if (p === 'settings-page' && typeof refreshPkBotUI === 'function') {
+                refreshPkBotUI();
             }
         }
         function switchTab(t) { currentEntryType=t; document.getElementById('expense-list-container').classList.toggle('hidden', t!=='expense'); document.getElementById('income-list-container').classList.toggle('hidden', t!=='income'); document.getElementById('expense-tab-button').className=`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${t==='expense'?'bg-white dark:bg-gray-600 shadow text-teal-700 dark:text-white':'text-gray-500 dark:text-gray-400'}`; document.getElementById('income-tab-button').className=`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${t==='income'?'bg-white dark:bg-gray-600 shadow text-teal-700 dark:text-white':'text-gray-500 dark:text-gray-400'}`; }
@@ -557,25 +644,36 @@
         
         const toBanglaNumber = num => num.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
 
+        function getChalanElapsedMs(chalan, nowOverride) {
+            if (!chalan) return 0;
+            const targetDateStr = chalan.timestamp ? chalan.timestamp : `${chalan.startDate}T00:00:00`;
+            const startTime = new Date(targetDateStr).getTime();
+            if (Number.isNaN(startTime)) return 0;
+            const endTime = (chalan.isEnded && chalan.endedAt) ? Number(chalan.endedAt) : (nowOverride || Date.now());
+            return endTime - startTime;
+        }
+
+        function formatChalanDurationBn(difference) {
+            if (difference < 0) return "শুরু হয়নি";
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            return `${toBanglaNumber(days)} দিন ${toBanglaNumber(hours)} ঘণ্টা ${toBanglaNumber(minutes)} মিনিট`;
+        }
+
         function updateAllChalanTimers() {
             if (!activeShipmentsForTimer) return;
-            const now = new Date().getTime();
+            const now = Date.now();
 
             Object.keys(activeShipmentsForTimer).forEach(k => {
                 const chalan = activeShipmentsForTimer[k];
-                const targetDateStr = chalan.timestamp ? chalan.timestamp : `${chalan.startDate}T00:00:00`;
-                const startTime = new Date(targetDateStr).getTime();
-                const difference = now - startTime;
+                const difference = getChalanElapsedMs(chalan, now);
+                const formatted = formatChalanDurationBn(difference);
+                const suffix = chalan && chalan.isEnded ? ' (সমাপ্ত)' : '';
 
                 const txtElements = document.querySelectorAll(`.timer-txt-${k}`);
-                
                 txtElements.forEach(el => {
-                    if (difference < 0) { el.innerText = "শুরু হয়নি"; return; }
-                    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                    
-                    el.innerText = `${toBanglaNumber(days)} দিন ${toBanglaNumber(hours)} ঘণ্টা ${toBanglaNumber(minutes)} মিনিট`;
+                    el.innerText = formatted + suffix;
                 });
             });
         }
@@ -625,19 +723,24 @@
         // 🐓 জেনারেট এইচটিএমএল ফাংশন (ডুপ্লিকেট কোড কমানোর জন্য এবং প্রিফিক্স দিয়ে ডাইনামিক করার জন্য)
         function createChalanHTML(k, chalan, prefix) {
             const uniqueId = `${prefix}-${k}`;
+            const endedBadge = chalan.isEnded
+                ? `<span class="inline-block ml-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">সমাপ্ত</span>`
+                : '';
+            const timerIcon = chalan.isEnded ? '⏹️' : '⏱️';
+            const timerTextClass = chalan.isEnded ? 'text-gray-600 dark:text-gray-300' : 'text-teal-600 dark:text-teal-400';
             return `<div onclick="viewShipment('${k}')" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm flex items-center justify-between border border-gray-100 dark:border-gray-700 hover:shadow-md transition cursor-pointer select-none">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center text-2xl">🐔</div>
-                    <div>
-                        <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm sm:text-base">${chalan.name}</h3>
+                <div class="flex items-center gap-4 min-w-0">
+                    <div class="w-12 h-12 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center text-2xl flex-shrink-0">🐔</div>
+                    <div class="min-w-0">
+                        <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm sm:text-base truncate">${chalan.name}${endedBadge}</h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${chalan.startDate}</p>
                     </div>
                 </div>
-                <div class="text-right flex items-center justify-end">
+                <div class="text-right flex items-center justify-end flex-shrink-0">
                     <div id="timer-btn-${uniqueId}" onclick="toggleTimerBadge(event, '${k}', '${prefix}')" class="flex items-center justify-center overflow-hidden transition-all duration-500 ease-in-out cursor-pointer active:scale-95">
-                        <span class="text-xl sm:text-2xl p-1 block">⏱️</span>
+                        <span class="text-xl sm:text-2xl p-1 block">${timerIcon}</span>
                         <div id="timer-text-wrap-${uniqueId}" class="max-w-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out whitespace-nowrap">
-                            <span class="timer-txt-${k} text-xs font-bold text-teal-600 dark:text-teal-400">হিসাব হচ্ছে...</span>
+                            <span class="timer-txt-${k} text-xs font-bold ${timerTextClass}">হিসাব হচ্ছে...</span>
                         </div>
                     </div>
                 </div>
@@ -667,12 +770,122 @@
 
         function renderDue(data) { const el=document.getElementById('due-list-container'); el.innerHTML=''; let t=0; if(data) Object.entries(data).reverse().forEach(([k,v])=>{ t+= +v.amount; el.innerHTML+=`<div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm flex justify-between items-start border border-gray-50 dark:border-gray-700"><div class="flex-1 min-w-0 mr-3"><h3 class="font-bold text-gray-800 dark:text-gray-100 break-all">${v.name}</h3><p class="text-xs text-gray-500 dark:text-gray-400">${v.mobile||''}</p><p class="text-xs text-gray-400 mt-1">${v.date}</p></div><div class="text-right flex-shrink-0"><p class="font-bold text-red-500 text-lg">৳${v.amount}</p><div class="relative mt-2"><button onclick="event.stopPropagation(); toggleMenu('due-opt-${k}')" class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><span class="material-symbols-outlined text-gray-400">more_vert</span></button><div id="due-opt-${k}" class="hidden absolute right-0 mt-1 w-32 bg-white dark:bg-gray-700 shadow-xl rounded-xl z-10 border dark:border-gray-600 overflow-hidden"><button onclick="editDue('${k}')" class="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-600 dark:text-white">এডিট</button><button onclick="deleteDue('${k}')" class="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">ডিলিট</button></div></div></div></div>`; }); document.getElementById('total-due-amount').innerText = `৳${t.toLocaleString('bn-BD')}`; }
         
+        function openEndShipmentModal() {
+            const modal = document.getElementById('end-shipment-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeEndShipmentModal() {
+            const modal = document.getElementById('end-shipment-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function confirmEndCurrentShipment() {
+            if (!currentUser || !currentShipmentId) {
+                closeEndShipmentModal();
+                return;
+            }
+            const uid = currentUser.uid;
+            const endedAt = Date.now();
+            const endedDate = new Date(endedAt).toISOString().split('T')[0];
+            const updates = {
+                isEnded: true,
+                endedAt,
+                endedDate
+            };
+
+            currentShipmentData = { ...(currentShipmentData || {}), ...updates };
+            if (activeShipmentsForTimer && activeShipmentsForTimer[currentShipmentId]) {
+                activeShipmentsForTimer[currentShipmentId] = {
+                    ...activeShipmentsForTimer[currentShipmentId],
+                    ...updates
+                };
+            }
+            try {
+                const offlineStr = localStorage.getItem('offline_shipments_' + uid);
+                if (offlineStr) {
+                    const parsed = JSON.parse(offlineStr);
+                    if (parsed && parsed[currentShipmentId]) {
+                        parsed[currentShipmentId] = { ...parsed[currentShipmentId], ...updates };
+                        localStorage.setItem('offline_shipments_' + uid, JSON.stringify(parsed));
+                    }
+                }
+            } catch (e) {}
+
+            closeEndShipmentModal();
+            renderShipmentStatusCard(currentShipmentId, currentShipmentData);
+            if (activeShipmentsForTimer) renderShipments(activeShipmentsForTimer);
+            showToast("⏹️ চালান শেষ করা হয়েছে — টাইমার বন্ধ রাখা হয়েছে ✅");
+
+            try {
+                await db.ref(`users/${uid}/shipments/${currentShipmentId}`).update(updates);
+            } catch (err) {
+                console.warn("Offline or error updating ended state:", err);
+            }
+        }
+
+        function renderShipmentStatusCard(id, d) {
+            const cardEl = document.getElementById('details-timer-status-card');
+            if (!cardEl || !d) return;
+
+            const elapsedMs = getChalanElapsedMs(d);
+            const elapsedDays = elapsedMs > 0 ? Math.floor(elapsedMs / (1000 * 60 * 60 * 24)) : 0;
+            const durationStr = formatChalanDurationBn(elapsedMs);
+
+            if (d.isEnded) {
+                cardEl.className = "bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 flex items-center justify-between gap-3";
+                cardEl.innerHTML = `
+                    <div class="min-w-0">
+                        <p class="text-[11px] font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm text-gray-600 dark:text-gray-300">timer_off</span>
+                            চালান সমাপ্ত · টাইমার বন্ধ
+                        </p>
+                        <p class="timer-txt-${id} text-sm font-bold text-gray-900 dark:text-white mt-0.5 tabular-nums">${durationStr} (সমাপ্ত)</p>
+                        ${d.endedDate ? `<p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">সমাপ্তির তারিখ: ${d.endedDate}</p>` : ''}
+                    </div>
+                    <span class="px-3 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex-shrink-0">সম্পন্ন</span>
+                `;
+                return;
+            }
+
+            if (elapsedDays >= 20) {
+                cardEl.className = "bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-800/60 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-3";
+                cardEl.innerHTML = `
+                    <div class="min-w-0">
+                        <p class="text-[11px] font-bold text-teal-700 dark:text-teal-400 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">timer</span>
+                            চালানের চলমান সময় (${toBanglaNumber(elapsedDays)} দিন+)
+                        </p>
+                        <p class="timer-txt-${id} text-sm font-bold text-gray-900 dark:text-white mt-0.5 tabular-nums">${durationStr}</p>
+                    </div>
+                    <button type="button" onclick="openEndShipmentModal()" class="min-h-[44px] px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition flex-shrink-0">
+                        <span class="material-symbols-outlined text-base">stop_circle</span>
+                        <span>চালান শেষ</span>
+                    </button>
+                `;
+                return;
+            }
+
+            cardEl.className = "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-3.5 shadow-sm flex items-center justify-between gap-3";
+            cardEl.innerHTML = `
+                <div class="min-w-0">
+                    <p class="text-[11px] font-bold text-teal-700 dark:text-teal-400 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">timer</span>
+                        চালানের চলমান ঘড়ি
+                    </p>
+                    <p class="timer-txt-${id} text-sm font-bold text-gray-900 dark:text-white mt-0.5 tabular-nums">${durationStr}</p>
+                </div>
+                <span class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 text-right">২০ দিন পর<br>শেষ বাটন আসবে</span>
+            `;
+        }
+
         function viewShipment(id) { 
             currentShipmentId = id; 
             navigate('shipment-details-page'); 
             const renderUI = (d) => {
                 currentShipmentData = d; 
                 document.getElementById('details-shipment-name').innerText = d.name; 
+                renderShipmentStatusCard(id, d);
                 const exp = Object.values(d.expenses||{}), inc = Object.values(d.incomes||{}); 
                 const te = exp.reduce((a,b)=>a+(+b.amount),0), ti = inc.reduce((a,b)=>a+(+b.amount),0), p = ti-te; 
                 document.getElementById('details-summary-cards').innerHTML = `<div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"><p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">লাভ / লস</p><p class="text-2xl font-bold mt-1 ${p>=0?'text-green-600':'text-red-500'}">৳${p.toLocaleString()}</p></div><div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"><p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">মোট আয়</p><p class="text-2xl font-bold mt-1 text-teal-600 dark:text-teal-400">৳${ti.toLocaleString()}</p></div><div class="col-span-2 bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex justify-between items-center"><div><p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">মোট ব্যয়</p><p class="text-2xl font-bold mt-1 text-red-500">৳${te.toLocaleString()}</p></div></div>`; 
@@ -682,7 +895,9 @@
             };
             const offlineData = localStorage.getItem('offline_shipments_' + currentUser.uid);
             if (offlineData) { const parsedData = JSON.parse(offlineData); if (parsedData[id]) renderUI(parsedData[id]); }
-            db.ref(`users/${currentUser.uid}/shipments/${id}`).on('value', s => { if(!s.exists()) return; renderUI(s.val()); }); 
+            if (currentShipmentDetailRef) currentShipmentDetailRef.off('value');
+            currentShipmentDetailRef = db.ref(`users/${currentUser.uid}/shipments/${id}`);
+            currentShipmentDetailRef.on('value', s => { if(!s.exists()) return; renderUI(s.val()); }); 
         }
 
         function openCategoryReport() {
@@ -988,6 +1203,9 @@
             if (dataToRestore.completed_medicines) {
                 localStorage.setItem(`completed_meds_${uid}`, JSON.stringify(dataToRestore.completed_medicines));
             }
+            if (dataToRestore.skipped_medicines) {
+                localStorage.setItem(`skipped_meds_${uid}`, JSON.stringify(dataToRestore.skipped_medicines));
+            }
 
             // ৩. অ্যাপের ইন্টারফেস রিফ্রেশ করা
             loadUserData();
@@ -1006,15 +1224,16 @@
 
         navigateToTab('dashboard');
     </script>
-    <script src="notifications.js"></script>
+    <script src="notifications.js?v=35"></script>
     <script src="stock.js"></script>
     <script src="daily_report.js"></script>
-    <script src="medicine.js?v=19"></script>
+    <script src="medicine.js?v=35"></script>
+    <script src="pk_chatbot.js?v=35"></script>
     
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js?v=19').then(reg => {
+                navigator.serviceWorker.register('sw.js?v=35').then(reg => {
                     reg.update();
                 }).catch(e => console.warn('SW registration warning:', e));
             });

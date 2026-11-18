@@ -8,8 +8,11 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="আমার হিসাব">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#00796B">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -169,6 +172,54 @@
                         <button onclick="toggleTheme()" class="w-12 h-6 rounded-full bg-gray-300 dark:bg-teal-600 relative transition-colors focus:outline-none">
                             <div id="theme-knob" class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-all dark:left-7 shadow-sm"></div>
                         </button>
+                    </div>
+                </div>
+
+                <!-- 🔔 ফোন নোটিফিকেশন ও অ্যাপ ইন্সটল (Android + iPhone Home Screen) -->
+                <div id="pwa-push-settings-card" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <h2 class="px-5 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-700/50">ফোন নোটিফিকেশন ও অ্যাপ ইন্সটল</h2>
+
+                    <div id="pwa-install-row" class="flex items-center justify-between gap-3 p-4 border-b border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined">install_mobile</span>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-sm text-gray-900 dark:text-white">হোম স্ক্রিনে যোগ করুন</h3>
+                                <p id="pwa-install-desc" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Add to Home Screen দিয়ে অ্যাপ হিসেবে ফোনে যুক্ত করুন</p>
+                            </div>
+                        </div>
+                        <button id="pwa-install-btn" type="button" onclick="triggerPwaInstall()" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold flex-shrink-0 active:scale-95 transition">
+                            যোগ করুন
+                        </button>
+                    </div>
+
+                    <div id="pwa-push-row" class="p-4 space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+                                    <span class="material-symbols-outlined">notifications_active</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="font-bold text-sm text-gray-900 dark:text-white">ফোন নোটিফিকেশন (অ্যাপ বন্ধ থাকলেও)</h3>
+                                    <p id="pwa-push-status" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">অ্যাপ বন্ধ থাকলেও ফোনে ঔষধ, খাবার ও পানির রিমাইন্ডার পান</p>
+                                </div>
+                            </div>
+                            <button id="pwa-push-btn" type="button" onclick="enablePkPhonePush()" class="min-h-[40px] px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex-shrink-0 active:scale-95 transition">
+                                <span id="pwa-push-btn-text">চালু করুন</span>
+                            </button>
+                        </div>
+
+                        <div id="pwa-ios-hint" class="hidden p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40 text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                            📱 <b>iPhone নির্দেশনা:</b> Safari দিয়ে <b>Share</b> বাটনে ট্যাপ করে <b>"Add to Home Screen"</b> করুন এবং হোম স্ক্রিনের অ্যাপ আইকন থেকে খুলে নোটিফিকেশন চালু করুন।
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2 pt-1">
+                            <span class="text-[11px] text-gray-400 dark:text-gray-500">খাবার ও পানি: দুপুর ১:০০, বিকাল ৩:৩০, রাত ৯:০০</span>
+                            <button id="pwa-push-test-btn" type="button" onclick="sendTestPhoneNotification()" class="hidden px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                                টেস্ট পাঠান
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -439,6 +490,44 @@
             </div>
         </div>
     </div>
+    <!-- 📱 iPhone Add to Home Screen Guide Modal -->
+    <div id="ios-install-guide-modal" class="hidden fixed inset-0 z-[76] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]" onclick="if(event.target===this) closeIosInstallGuide()">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-gray-100 dark:border-gray-700 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 flex items-center justify-center">
+                        <span class="material-symbols-outlined">add_to_home_screen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">iPhone-এ হোম স্ক্রিনে যোগ করুন</h3>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">iOS 16.4+ ব্যাকগ্রাউন্ড নোটিফিকেশনের জন্য আবশ্যক</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeIosInstallGuide()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full transition">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-2.5 text-xs text-gray-700 dark:text-gray-200">
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-teal-700 text-white font-bold flex items-center justify-center flex-shrink-0 text-[11px]">১</span>
+                    <span>iPhone-এর <b>Safari</b> ব্রাউজার দিয়ে এই সাইটটি খুলুন।</span>
+                </div>
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-teal-700 text-white font-bold flex items-center justify-center flex-shrink-0 text-[11px]">২</span>
+                    <span>নিচের <b>Share (⬆️)</b> আইকনে ট্যাপ করে <b>"Add to Home Screen"</b> সিলেক্ট করুন এবং <b>Add</b> চাপুন।</span>
+                </div>
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-teal-700 text-white font-bold flex items-center justify-center flex-shrink-0 text-[11px]">৩</span>
+                    <span>এবার হোম স্ক্রিনের <b>আমার হিসাব</b> আইকন থেকে অ্যাপটি খুলে সেটিংস → <b>ফোন নোটিফিকেশন</b> চালু করুন।</span>
+                </div>
+            </div>
+
+            <button type="button" onclick="closeIosInstallGuide()" class="w-full min-h-[44px] py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm transition">
+                বুঝেছি
+            </button>
+        </div>
+    </div>
     <div id="toast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2 rounded-full text-sm z-50 shadow-lg"></div>
     <div id="pdf-overlay" class="hidden"><div id="pdf-content" style="padding:30px;font-family:'Noto Sans Bengali';background:white;color:black;"><div style="text-align:center;border-bottom:2px solid #00796B;padding-bottom:10px;margin-bottom:20px;"><h1 style="font-size:24px;color:#00796B;">আমার হিসাব</h1><p>পোল্ট্রি খামার রিপোর্ট</p></div><table style="width:100%;margin-bottom:20px;"><tr><td><h2 id="pdf-shipment-name"></h2><p id="pdf-shipment-date"></p></td><td style="text-align:right;"><span id="pdf-chicken-count"></span></td></tr></table><div style="display:flex;margin-bottom:20px;border:1px solid #ddd;"><div style="flex:1;background:#e0f7fa;padding:10px;border-right:1px solid #ddd;">আয়<br><b id="pdf-total-income"></b></div><div style="flex:1;background:#ffebee;padding:10px;border-right:1px solid #ddd;">ব্যয়<br><b id="pdf-total-expense"></b></div><div style="flex:1;background:#f1f8e9;padding:10px;">লাভ<br><b id="pdf-net-profit"></b></div></div><table class="pdf-table" style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f2f2f2;"><th>তারিখ</th><th>বিবরণ</th><th>ধরন</th><th>পরিমাণ</th></tr></thead><tbody id="pdf-table-body"></tbody></table><div style="margin-top:30px;text-align:right;font-size:10px;">Dev - Shuvo</div></div></div>
 
@@ -577,8 +666,9 @@
                     renderScheduleTimeline();
                 }
             }
-            if (p === 'settings-page' && typeof refreshPkBotUI === 'function') {
-                refreshPkBotUI();
+            if (p === 'settings-page') {
+                if (typeof refreshPkBotUI === 'function') refreshPkBotUI();
+                if (typeof updatePushSettingsUI === 'function') updatePushSettingsUI();
             }
         }
         function switchTab(t) { currentEntryType=t; document.getElementById('expense-list-container').classList.toggle('hidden', t!=='expense'); document.getElementById('income-list-container').classList.toggle('hidden', t!=='income'); document.getElementById('expense-tab-button').className=`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${t==='expense'?'bg-white dark:bg-gray-600 shadow text-teal-700 dark:text-white':'text-gray-500 dark:text-gray-400'}`; document.getElementById('income-tab-button').className=`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${t==='income'?'bg-white dark:bg-gray-600 shadow text-teal-700 dark:text-white':'text-gray-500 dark:text-gray-400'}`; }
@@ -1224,16 +1314,17 @@
 
         navigateToTab('dashboard');
     </script>
-    <script src="notifications.js?v=35"></script>
+    <script src="notifications.js?v=39"></script>
     <script src="stock.js"></script>
     <script src="daily_report.js"></script>
-    <script src="medicine.js?v=35"></script>
-    <script src="pk_chatbot.js?v=35"></script>
+    <script src="medicine.js?v=39"></script>
+    <script src="pk_chatbot.js?v=39"></script>
+    <script src="push_notifications.js?v=39"></script>
     
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js?v=35').then(reg => {
+                navigator.serviceWorker.register('sw.js?v=39').then(reg => {
                     reg.update();
                 }).catch(e => console.warn('SW registration warning:', e));
             });

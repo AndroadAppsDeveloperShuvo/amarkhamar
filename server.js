@@ -503,6 +503,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Serve public VAPID key for local Web Push testing (never exposes private key)
+app.get('/api/push-config', (req, res) => {
+  res.json({
+    vapidPublicKey: (process.env.VAPID_PUBLIC_KEY || '').trim()
+  });
+});
+
 // Serve health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

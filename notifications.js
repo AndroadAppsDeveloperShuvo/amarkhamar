@@ -12,6 +12,10 @@ let botNotifications = [];
 document.addEventListener('DOMContentLoaded', () => {
     generateTimeBasedNotifications();
     renderAllNotifications();
+    setInterval(() => {
+        generateTimeBasedNotifications();
+        renderAllNotifications();
+    }, 60000);
 });
 
 // ফায়ারবেস অথেন্টিকেশন লিসেনার (লগইন করলে স্টক চেক শুরু হবে)
@@ -32,6 +36,31 @@ function generateTimeBasedNotifications() {
     timeNotifications = [];
     const now = new Date();
     const hour = now.getHours();
+    const totalMinutes = hour * 60 + now.getMinutes();
+
+    // নির্ধারিত খাবার ও পানি চেক নোটিফিকেশন (দুপুর ১টা, বিকাল ৩:৩০, রাত ৯টা)
+    if (totalMinutes >= 13 * 60 && totalMinutes < 15 * 60 + 30) {
+        timeNotifications.push({
+            icon: '🍽️',
+            color: 'bg-teal-100 text-teal-700',
+            title: 'দুপুর ১টার খাবার ও পানি চেক',
+            desc: 'মুরগির পাত্রে পর্যাপ্ত খাবার ও পরিষ্কার পানি আছে কি না এখনই চেক করুন।'
+        });
+    } else if (totalMinutes >= 15 * 60 + 30 && totalMinutes < 21 * 60) {
+        timeNotifications.push({
+            icon: '💧',
+            color: 'bg-cyan-100 text-cyan-700',
+            title: 'বিকাল ৩:৩০টার খাবার ও পানি চেক',
+            desc: 'বিকেলে আবার মুরগির পাত্রে খাবার ও পরিষ্কার পানি আছে কি না দেখে নিন।'
+        });
+    } else if (totalMinutes >= 21 * 60 || totalMinutes < 5 * 60) {
+        timeNotifications.push({
+            icon: '🥛',
+            color: 'bg-indigo-100 text-indigo-700',
+            title: 'রাত ৯টার খাবার ও পানি চেক',
+            desc: 'রাতে ঘুমানোর আগে মুরগির পর্যাপ্ত খাবার ও পানি দেওয়া হয়েছে কি না নিশ্চিত করুন।'
+        });
+    }
 
     // সকাল
     if (hour >= 5 && hour < 12) {

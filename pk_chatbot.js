@@ -4,7 +4,7 @@
 */
 
 (function () {
-    const PK_CHATBOT_VERSION = 35;
+    const PK_CHATBOT_VERSION = 39;
     const PK_DEVELOPER_BIODATA_URL = 'https://shuvopkofficial.github.io/biodata.com/';
     const DEFAULT_DOCTOR_CONFIG = {
         enabled: true,
@@ -127,6 +127,9 @@
         if (selectEl) selectEl.value = breed;
         refreshPkBotUI();
         syncDailyCheckinToCloud();
+        if (typeof window.syncPushSubscriptionBreed === 'function') {
+            window.syncPushSubscriptionBreed(breed);
+        }
     }
 
     function getScheduleItemKey(item) {

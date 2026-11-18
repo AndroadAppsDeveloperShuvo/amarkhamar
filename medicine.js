@@ -98,18 +98,21 @@ const medicinePageHTML = `
             </div>
         </div>
 
-        <!-- 🎯 Tracking Status Filter Tabs (High-fidelity design) -->
+        <!-- 🎯 Tracking Status Filter Tabs (High-fidelity 4-tab design) -->
         <div class="space-y-2">
             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block mb-1">ওষুধের ব্যবহার ট্র্যাকিং</label>
-            <div class="bg-gray-100 dark:bg-gray-800/80 p-1 rounded-2xl flex items-center gap-1 shadow-inner">
-                <button onclick="setTrackingFilter('all')" id="tab-track-all" class="flex-1 py-2.5 rounded-xl text-xs font-black transition-all duration-200 bg-white dark:bg-gray-700 text-teal-700 dark:text-teal-400 shadow-sm active:scale-95">
+            <div class="bg-gray-100 dark:bg-gray-800/80 p-1 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-1 shadow-inner">
+                <button onclick="setTrackingFilter('all')" id="tab-track-all" class="py-2.5 px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 bg-white dark:bg-gray-700 text-teal-700 dark:text-teal-400 shadow-sm active:scale-95">
                     সব ওষুধ (<span id="count-track-all">0</span>)
                 </button>
-                <button onclick="setTrackingFilter('remaining')" id="tab-track-remaining" class="flex-1 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 active:scale-95">
+                <button onclick="setTrackingFilter('remaining')" id="tab-track-remaining" class="py-2.5 px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 active:scale-95">
                     বাকি আছে (<span id="count-track-remaining">0</span>)
                 </button>
-                <button onclick="setTrackingFilter('completed')" id="tab-track-completed" class="flex-1 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 active:scale-95">
+                <button onclick="setTrackingFilter('completed')" id="tab-track-completed" class="py-2.5 px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 active:scale-95">
                     ব্যবহৃত হয়েছে (<span id="count-track-completed">0</span>)
+                </button>
+                <button onclick="setTrackingFilter('skipped')" id="tab-track-skipped" class="py-2.5 px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 active:scale-95">
+                    প্রয়োজন নেই (<span id="count-track-skipped">0</span>)
                 </button>
             </div>
         </div>
@@ -599,14 +602,14 @@ window.getMedicineTickEligibility = getMedicineTickEligibility;
 function setTrackingFilter(filter) {
     currentTrackingFilter = filter;
     
-    const filters = ['all', 'remaining', 'completed'];
+    const filters = ['all', 'remaining', 'completed', 'skipped'];
     filters.forEach(f => {
         const btn = document.getElementById(`tab-track-${f}`);
         if (btn) {
             if (f === filter) {
-                btn.className = "flex-1 py-2.5 rounded-xl text-xs font-black transition-all duration-200 bg-white dark:bg-gray-700 text-teal-700 dark:text-teal-400 shadow-sm active:scale-95";
+                btn.className = "py-2.5 px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 bg-white dark:bg-gray-700 text-teal-700 dark:text-teal-400 shadow-sm active:scale-95";
             } else {
-                btn.className = "flex-1 py-2.5 rounded-xl text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 active:scale-95";
+                btn.className = "py-2.5 px-2 rounded-xl text-[11px] sm:text-xs font-black transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 active:scale-95";
             }
         }
     });
@@ -1779,6 +1782,7 @@ function renderScheduleTimeline() {
     let totalMeds = breedSchedules.length;
     let completedMeds = 0;
     let remainingMeds = 0;
+    let skippedMeds = 0;
 
     // একই দিন + একই বেলায় একাধিক বিকল্প ঔষধ আছে কিনা ট্র্যাক করা
     const dayTimeSlotCounts = {};
@@ -1788,7 +1792,9 @@ function renderScheduleTimeline() {
         const itemKey = item.id || ('std_' + item.day + '_' + item.name.replace(/\s+/g, '_') + '_' + (item.time || ''));
         if (completedMedicinesMap[itemKey]) {
             completedMeds++;
-        } else if (!skippedMedicinesMap[itemKey]) {
+        } else if (skippedMedicinesMap[itemKey]) {
+            skippedMeds++;
+        } else {
             remainingMeds++;
         }
     });
@@ -1796,9 +1802,11 @@ function renderScheduleTimeline() {
     const countAll = document.getElementById('count-track-all');
     const countRemaining = document.getElementById('count-track-remaining');
     const countCompleted = document.getElementById('count-track-completed');
+    const countSkipped = document.getElementById('count-track-skipped');
     if (countAll) countAll.innerText = totalMeds;
     if (countRemaining) countRemaining.innerText = remainingMeds;
     if (countCompleted) countCompleted.innerText = completedMeds;
+    if (countSkipped) countSkipped.innerText = skippedMeds;
 
     // ১. ফিল্টারিং করুন জাত ও সার্চ কুয়েরি এবং ট্র্যাকিং ফিল্টার অনুযায়ী
     let filteredSchedules = activeSchedulesList.filter(item => {
@@ -1822,6 +1830,8 @@ function renderScheduleTimeline() {
             return !isCompleted && !isSkipped;
         } else if (currentTrackingFilter === 'completed') {
             return isCompleted;
+        } else if (currentTrackingFilter === 'skipped') {
+            return isSkipped;
         }
         return true;
     });
@@ -1843,6 +1853,8 @@ function renderScheduleTimeline() {
             emptyMessage = "🎉 চমৎকার! আপনার কোনো ঔষধ বাকি নেই।";
         } else if (currentTrackingFilter === 'completed') {
             emptyMessage = "আপনি এখনও কোনো ঔষধ ব্যবহার করা হয়েছে মার্ক করেননি।";
+        } else if (currentTrackingFilter === 'skipped') {
+            emptyMessage = "আপনি এখনও কোনো ঔষধ 'প্রয়োজন নেই' হিসেবে বাদ দেননি।";
         }
 
         sView.innerHTML = `

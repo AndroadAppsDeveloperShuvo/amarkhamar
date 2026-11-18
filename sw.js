@@ -1,6 +1,6 @@
 // 🌐 Offline-First & Stale-While-Revalidate PWA Service Worker (স্থায়ী অফলাইন ক্যাশিং)
 
-const CACHE_NAME = 'khamar-app-v35';
+const CACHE_NAME = 'khamar-app-v39';
 
 // ১. লোকাল ফাইলসমূহ
 const localUrlsToCache = [
@@ -8,9 +8,10 @@ const localUrlsToCache = [
     './index.html', 
     './stock.js', 
     './daily_report.js',
-    './medicine.js?v=35',
-    './pk_chatbot.js?v=35',
-    './notifications.js?v=35',
+    './medicine.js?v=39',
+    './pk_chatbot.js?v=39',
+    './notifications.js?v=39',
+    './push_notifications.js?v=39',
     './admin.html',
     './manifest.json',
     './icon.png'
@@ -133,6 +134,76 @@ self.addEventListener('fetch', event => {
                 .catch(() => cachedResponse || null);
 
             return cachedResponse || fetchPromise;
+        })
+    );
+});
+
+// 🔔 ৩. ব্যাকগ্রাউন্ড Web Push রিসিভ ও নোটিফিকেশন প্রদর্শন (অ্যাপ বন্ধ থাকলেও চলবে)
+self.addEventListener('push', event => {
+    let data = {
+        title: 'আমার খামার - স্মার্ট ম্যানেজার 🐔',
+        body: 'আপনার খামারের নতুন রিমাইন্ডার এসেছে।',
+        icon: './icon.png',
+        badge: './icon.png',
+        tag: 'amar-hisab-push',
+        action: 'pk_chatbot'
+    };
+
+    if (event.data) {
+        try {
+            const parsed = event.data.json();
+            if (parsed && typeof parsed === 'object') {
+                data = { ...data, ...parsed };
+            }
+        } catch (_) {
+            try {
+                const txt = event.data.text();
+                if (txt) data.body = txt;
+            } catch (__) {}
+        }
+    }
+
+    const baseScope = (self.registration && self.registration.scope) || self.location.href;
+    const action = data.action || 'pk_chatbot';
+    const targetUrl = new URL(`./index.html?open=${encodeURIComponent(action)}`, baseScope).href;
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, {
+            body: data.body,
+            icon: data.icon || './icon.png',
+            badge: data.badge || './icon.png',
+            tag: data.tag || 'amar-hisab-push',
+            renotify: true,
+            vibrate: [200, 100, 200],
+            data: {
+                action,
+                url: targetUrl
+            }
+        })
+    );
+});
+
+self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    const notifData = (event.notification && event.notification.data) || {};
+    const action = notifData.action || 'pk_chatbot';
+    const baseScope = (self.registration && self.registration.scope) || self.location.href;
+    const targetUrl = new URL(`./index.html?open=${encodeURIComponent(action)}`, baseScope).href;
+
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+            for (const client of clientList) {
+                if ('focus' in client) {
+                    client.focus();
+                    try {
+                        client.postMessage({ type: 'PK_NAVIGATE', action });
+                    } catch (_) {}
+                    return;
+                }
+            }
+            if (self.clients.openWindow) {
+                return self.clients.openWindow(targetUrl);
+            }
         })
     );
 });
